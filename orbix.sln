@@ -1,0 +1,33 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.002.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{C8C1E778-5B67-40BF-9058-E4057BFC614C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{AA79B043-F90C-4841-A093-699A8C811E07}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConvertBitmap", "src\tools\ConvertBitmap\ConvertBitmap.csproj", "{BFB4E040-1C91-4E2F-9510-8DBEFCDEA237}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BFB4E040-1C91-4E2F-9510-8DBEFCDEA237}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BFB4E040-1C91-4E2F-9510-8DBEFCDEA237}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BFB4E040-1C91-4E2F-9510-8DBEFCDEA237}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BFB4E040-1C91-4E2F-9510-8DBEFCDEA237}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{AA79B043-F90C-4841-A093-699A8C811E07} = {C8C1E778-5B67-40BF-9058-E4057BFC614C}
+		{BFB4E040-1C91-4E2F-9510-8DBEFCDEA237} = {AA79B043-F90C-4841-A093-699A8C811E07}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {EE2DBBE6-99C2-43A1-A618-A26162814C1C}
+	EndGlobalSection
+EndGlobal

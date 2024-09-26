@@ -1,0 +1,8 @@
+src/*.asm
+src/*.crt
+src/*.dbj
+src/*.int
+src/*.lbl
+src/*.map
+
+

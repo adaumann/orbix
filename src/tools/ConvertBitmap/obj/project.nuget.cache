@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "k0f5ygLMMd7bVRitiOJss/s3qcQ7M/mAcnwvMibL31Npg7oYgdjPg9o0zfikLEpeqoCEkdr7hs1wEI+7LK7wJw==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\mail\\OneDrive\\Source\\orbix\\src\\tools\\ConvertBitmap\\ConvertBitmap.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\mail\\.nuget\\packages\\microsoft.win32.systemevents\\8.0.0\\microsoft.win32.systemevents.8.0.0.nupkg.sha512",
+    "C:\\Users\\mail\\.nuget\\packages\\system.drawing.common\\8.0.8\\system.drawing.common.8.0.8.nupkg.sha512"
+  ],
+  "logs": []
+}
