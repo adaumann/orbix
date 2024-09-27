@@ -1,2 +1,2 @@
-oscar64 .\orbix.cpp  -n -g -Os -tf=crt -nz
-x64sc.exe .\depeg.crt
+oscar64 .\orbix.cpp  -n -g -Os -tf=crt -xz -Oz
+x64sc.exe .\orbix.crt

@@ -646,14 +646,14 @@ __noinline void proxy0_bm_put(const Bitmap *bm, int x, int y, bool c)
 	mmap_set(MMAP_ROM);
 }
 
-void proxy0_spr_image(byte id, byte image)
+__noinline void proxy0_spr_image(byte id, byte image)
 {
 	mmap_set(MMAP_RAM);
 	spr_image(id, image);
 	mmap_set(MMAP_ROM);
 }
 
-void proxy0_spr_set(char sp, bool show, int xpos, int ypos, char image, char color, bool multi, bool xexpand, bool yexpand)
+__noinline inline void proxy0_spr_set(char sp, bool show, int xpos, int ypos, char image, char color, bool multi, bool xexpand, bool yexpand)
 {
 	char *  barSprite = (char*)0xCBF8;
 
@@ -664,11 +664,8 @@ void proxy0_spr_set(char sp, bool show, int xpos, int ypos, char image, char col
 	mmap_set(MMAP_ROM);
 }
 
-
-
 __noinline void proxy0_put_score(int x, int y, signed int score)
 {
-
 	rirq_wait();
 	mmap_set(MMAP_RAM);
 	char buffer[10];
@@ -677,8 +674,6 @@ __noinline void proxy0_put_score(int x, int y, signed int score)
 	bm_put_string(&Screen, &scr, x - strlen(buffer) * 6, y - 12, buffer, BLTOP_XOR);
 	mmap_set(MMAP_ROM);
 }
-
-
 
 __noinline void proxy0_put_text(int x, int y, byte textId)
 {
@@ -734,7 +729,6 @@ __noinline void proxy0_pix_set(unsigned px, unsigned py, bool isConfetti)
 	pix_set(px, py, isConfetti);
 	mmap_set(MMAP_ROM);
 }
-
 
 __noinline void proxy12_collideQueue_enqueue(byte insertItem)
 {
@@ -1330,13 +1324,10 @@ __noinline void proxy12_intro()
 	eflash.bank = 1;
 }
 
-
-
 inline void registerCallBank(byte fromBank)
 {
 	callBank = fromBank;
 }
-
 
 void playSfx(byte num)
 {
@@ -1365,7 +1356,6 @@ void playSfx(byte num)
         ldy #$02
         jsr $cc4a	
     };
-
 }
 
 void playSubtune(byte num)
@@ -1825,7 +1815,7 @@ void paintLevMenu_1()
 
 void frameLoop_1()
 {
-	//char sub[] = "Press FIRE to start";
+	char sub[] = "Press FIRE to start";
 	char startTxt[] = "Start Game";
 	char levelTxt[] = "Starting Level: ";
 	char backTxt[] = "Back";
@@ -1868,7 +1858,7 @@ void frameLoop_1()
 		}
 		if(timer == 255 && titlePhase == 1)
 		{
-	//		proxy0_put_string(&Screen, &scr, 118, 176, sub, BLTOP_COPY);
+			proxy0_put_string(&Screen, &scr, 118, 176, sub, BLTOP_COPY);
 			colorAreaUnclipped(14,22,12,1,0xf1, true);
 			titlePhase = 2;
 		}
@@ -1886,8 +1876,8 @@ void frameLoop_1()
 		rasterMenuInit(true);
 		proxy0_bm_rect_fill(&Screen, &scr, 96, 64, 128, 64);
 		proxy0_bm_rect_clear(&Screen, &scr, 97, 65, 126, 62);
-		// proxy0_put_string(&Screen, &scr, 1, 192, authorTxt, BLTOP_COPY);
-		// proxy0_put_string(&Screen, &scr, 258, 192, author2Txt, BLTOP_COPY);
+		proxy0_put_string(&Screen, &scr, 1, 192, authorTxt, BLTOP_COPY);
+		proxy0_put_string(&Screen, &scr, 258, 192, author2Txt, BLTOP_COPY);
 		colorAreaUnclipped(0,24,40,1,0xe1, true);
 		proxy0_put_string(&Screen, &scr, 160 - (70 / 2), 72, titleTxt, BLTOP_COPY);
 		proxy0_put_string(&Screen, &scr, 160 - (50 / 2), 96, startTxt, BLTOP_COPY);
@@ -3140,7 +3130,7 @@ void resetBall_1(byte id)
 void updateCollisions_1()
 {
 	struct GameObject *b1;
-	struct GameObject *b2;
+	struct GameObject *b2 = nullptr;
 
 	for (byte i = 0; i < numColPairs; i++)
 	{
@@ -6819,7 +6809,6 @@ void rasterSnd(bool useKernal)
 
 	rirq_start();	
 }
-#define VIC_CONTROL_REGISTER 53265
 
 int main(void)
 {
@@ -6829,8 +6818,6 @@ int main(void)
 	// Disable CIA interrupts, we do not want interference
 	// with our joystick interrupt
 	cia_init();
-    *((unsigned char*)VIC_CONTROL_REGISTER) = 0;  // Disable screen
-
 	timer = 0;
 	collideQueueFront = -1;
 	collideQueueRear = -1;
@@ -6887,13 +6874,12 @@ int main(void)
 	initStarPolygon_2();
 	eflash.bank = 1;
 	highlight.timer = 0;
-	level = 12;
+	level = 0;
 	breakMusic = false;
 
 	state = GS_TITLE_INIT;
 
-    *((unsigned char*)VIC_CONTROL_REGISTER) = 27;  // Enable screen
-
+ 
 	// Forever
 	for (;;)
 	{
