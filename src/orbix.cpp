@@ -424,7 +424,7 @@ char texts[6][20] = {"LEVEL START", "BALL LOST", "BALL SAVED", "ALL CLEAR", "LEV
 
 char bonusTxt[5] = {'B','O','N','U','S'};
 
-char scoreTxt[41] = s"00000000           X1          BALLS: --\0";
+const char scoreTxt[41] = s"00000000           X1          BALLS: --\0";
 byte callBank;
 sbyte globalOrientation = 1;
 byte posYTray = 0, timer = 0, tray = 0;
@@ -653,12 +653,12 @@ __noinline void proxy0_spr_image(byte id, byte image)
 	mmap_set(MMAP_ROM);
 }
 
-__noinline inline void proxy0_spr_set(char sp, bool show, int xpos, int ypos, char image, char color, bool multi, bool xexpand, bool yexpand)
+__noinline void proxy0_spr_set(char sp, bool show, int xpos, int ypos, char image, char color, bool multi, bool xexpand, bool yexpand)
 {
 	char *  barSprite = (char*)0xCBF8;
 
-	spr_set(sp, show, xpos, ypos, image, color, multi, xexpand, yexpand);
 	mmap_set(MMAP_RAM);
+	spr_set(sp, show, xpos, ypos, image, color, multi, xexpand, yexpand);
 	spr_image(sp, image);
 	barSprite[sp] = image;
 	mmap_set(MMAP_ROM);
@@ -719,7 +719,6 @@ __noinline void proxy0_bm_rect_fill(const Bitmap * dbm, const ClipRect * clip, i
 	mmap_set(MMAP_NO_ROM);
 	bm_rect_fill(dbm, clip, dx, dy, w, h);
 	mmap_set(MMAP_ROM);
-
 }
 
 __noinline void proxy0_pix_set(unsigned px, unsigned py, bool isConfetti)
@@ -1324,6 +1323,23 @@ __noinline void proxy12_intro()
 	eflash.bank = 1;
 }
 
+__noinline float proxy13_qsqrt(float number)
+{
+	eflash.bank = 3;
+	float ret = qsqrt_3(number);
+	eflash.bank = 1;
+	return ret;
+}
+
+__noinline float proxy23_qsqrt(float number)
+{
+	eflash.bank = 3;
+	float ret = qsqrt_3(number);
+	eflash.bank = 2;
+	return ret;
+}
+
+
 inline void registerCallBank(byte fromBank)
 {
 	callBank = fromBank;
@@ -1399,22 +1415,6 @@ __native inline bool IsBitSet(const byte comp, const byte test)
 }
 
 // from QUAKE3
-float qsqrt( float number )
-{
-  long i;
-  float x2, y;
-  const float threehalfs = 1.5;
-
-  x2 = number * 0.5;
-  y  = number;
-  i  = * ( long * ) &y;
-  i  = 0x5f3759df - ( i >> 1 );
-  y  = * ( float * ) &i;
-  y  = y * ( threehalfs - ( x2 * y * y ) );
-
-  return 1/y;
-}
-
 
 void copyTitle()
 {
@@ -2431,11 +2431,11 @@ void updateRender_1(byte id, bool init)
 		float qx = (go->ax - go->px);
 		float qy = (go->ay - go->py);
 
-		float dq = qsqrt(qx * qx + qy * qy);
+		float dq = proxy13_qsqrt(qx * qx + qy * qy);
 		qx /= dq;
 		qy /= dq;
 
-		float d = qsqrt(nx * nx + ny * ny);
+		float d = proxy13_qsqrt(nx * nx + ny * ny);
 		nx /= d;
 		ny /= d;
 		proxy12_colorBoundingBox(id);
@@ -2474,7 +2474,7 @@ void updateRender_1(byte id, bool init)
 
 		float nx = -(go->ay - go->py);
 		float ny = (go->ax - go->px);
-		float d = qsqrt(nx * nx + ny * ny);
+		float d = proxy13_qsqrt(nx * nx + ny * ny);
 		nx /= d;
 		ny /= d;
 		byte grey = 8;
@@ -3016,7 +3016,7 @@ void updatePhysics_1(byte id)
 						}
 
 						// Distance between ball centers
-						float fDistance = qsqrt((go->px - target->px) * (go->px - target->px) + (go->py - target->py) * (go->py - target->py));
+						float fDistance = proxy13_qsqrt((go->px - target->px) * (go->px - target->px) + (go->py - target->py) * (go->py - target->py));
 
 						// Displace Current Ball away from collision
 
@@ -3069,7 +3069,7 @@ void updatePhysics_1(byte id)
 					float radiusSum = go->radius + target->radius;
 					if (fDistanceSq <= radiusSum * radiusSum) 
 					{
-						float fDistance = qsqrt(fDistanceSq);
+						float fDistance = proxy13_qsqrt(fDistanceSq);
 						playSfx(SND_BUMP);
 
 						if (IsBitSet(target->comp2, Component2_Kill) && !IsBitSet(go->comp2, Component2_Destroyed))
@@ -3150,7 +3150,7 @@ void updateCollisions_1()
 		}
 
 		// Distance between balls
-		float fDistance = qsqrt((b1->px - b2->px) * (b1->px - b2->px) + (b1->py - b2->py) * (b1->py - b2->py));
+		float fDistance = proxy13_qsqrt((b1->px - b2->px) * (b1->px - b2->px) + (b1->py - b2->py) * (b1->py - b2->py));
 
 		// Normal
 		float nx = (b2->px - b1->px) / fDistance;
@@ -3434,30 +3434,13 @@ void updateDestroyed_2(byte id)
 	}
 }
 
-// void colorAreaCircle_2(unsigned char x0, unsigned char y0, unsigned char radius, byte backc, bool onlyBack)
-// {
-// 	char* col = Color1;
-// 	int radius_sqr = radius * radius;  
-// 	for (int x = -radius; x < radius ; x++)
-// 	{
-// 		byte hh = (byte)qsqrt(radius_sqr - x * x);
-// 		byte rx = x0 + x;
-// 		byte ph = y0 + hh;
-
-// 		for (int y = y0-hh; y < ph; y++)
-// 		{
-// 			proxy0_colorChar(rx, y, backc, col, onlyBack);
-// 		}
-// 	}
-// }
-
 void colorAreaCircle_2(unsigned char x0, unsigned char y0, unsigned char radius, byte backc, bool onlyBack)
 {
     char* col = Color1;
     int radius_sqr = radius * radius;  
     for (int x = 0; x <= radius; x++) // Loop only from 0 to radius
     {
-        byte hh = (byte)qsqrt(radius_sqr - x * x);
+        byte hh = (byte)proxy23_qsqrt(radius_sqr - x * x);
         byte rx1 = x0 + x;  // Right side x
         byte rx2 = x0 - x;  // Left side x (mirrored)
 
@@ -4817,6 +4800,23 @@ void titleFadeOut_2()
 #pragma data(bdata3)
 
 // ---------------- BANK 3 Scene
+
+float qsqrt_3(float number)
+{
+  long i;
+  float x2, y;
+  const float threehalfs = 1.5;
+
+  x2 = number * 0.5;
+  y  = number;
+  i  = * ( long * ) &y;
+  i  = 0x5f3759df - ( i >> 1 );
+  y  = * ( float * ) &i;
+  y  = y * ( threehalfs - ( x2 * y * y ) );
+
+  return 1/y;
+}
+
 
 struct Box getBoundingBoxLine_3(float x1, float y1, float x2, float y2, float radius)
 {
@@ -6222,47 +6222,47 @@ void initScene6_4()
 	proxy3_setGameObjectImage(numObjects++, IMG_LANDSCAPE3, 0, 22, 40, 3, true, GCOL_BLUE, true);
 	proxy3_setGameObjectImage(numObjects++, IMG_ALIEN2, 33, 10, 7, 12, true, GCOL_LT_RED, true);
 
-    byte *arraySwitches = (byte *)malloc(9 * sizeof(byte));
+    // byte *arraySwitches = (byte *)malloc(9 * sizeof(byte));
 
-    // Adding bump circles in a grid pattern
-    for (byte row = 0; row < 3; row++)
-    {
-        for (byte col = 0; col < 3; col++)
-        {
-            byte x = 80 + col * 80;
-            byte y = 50 + row * 50;
-            byte i = (col * 4) + row;
+    // // Adding bump circles in a grid pattern
+    // for (byte row = 0; row < 3; row++)
+    // {
+    //     for (byte col = 0; col < 3; col++)
+    //     {
+    //         byte x = 80 + col * 80;
+    //         byte y = 50 + row * 50;
+    //         byte i = (col * 4) + row;
 
-            arraySwitches[i] = numObjects;
-            proxy3_setGameObjectSwitchCircle(numObjects++, x, y, 9, 1.0, GCOL_YELLOW, false);
-            if (col < 2 && row < 2)
-            {
-                proxy3_setGameObjectTimedValuableCircle(numObjects++, x + 40, y + 25, 5, true);
-            }
-        }
-    }
-    byte i = 0;
-    for (byte row = 0; row < 3; row++)
-    {
-        for (byte col = 0; col < 3; col++)
-        {
-            byte x = 80 + col * 80;
-            byte y = 50 + row * 50;
+    //         arraySwitches[i] = numObjects;
+    //         proxy3_setGameObjectSwitchCircle(numObjects++, x, y, 9, 1.0, GCOL_YELLOW, false);
+    //         if (col < 2 && row < 2)
+    //         {
+    //             proxy3_setGameObjectTimedValuableCircle(numObjects++, x + 40, y + 25, 5, true);
+    //         }
+    //     }
+    // }
+    // byte i = 0;
+    // for (byte row = 0; row < 3; row++)
+    // {
+    //     for (byte col = 0; col < 3; col++)
+    //     {
+    //         byte x = 80 + col * 80;
+    //         byte y = 50 + row * 50;
 
-            if (col < 2 && i % 2 == 0)
-            {
-                proxy3_setGameObjectLaser(numObjects++, x, y, x + 80, y, GCOL_YELLOW, true);
-            }
-            if (row < 2 && i % 2 == 1)
-            {
-                proxy3_setGameObjectLaser(numObjects++, x, y, x, y + 60, GCOL_YELLOW, true);
-            }
-            proxy3_addActor(EventSwitchOn, 0xff, arraySwitches[i], ActionDisableCollision, numObjects - 2, numObjects - 1, 0xff, 0xff, 0xff);
-            proxy3_addActor(EventSwitchOff, 0xff, arraySwitches[i], ActionEnableCollision, numObjects - 2, numObjects - 1, 0xff, 0xff, 0xff);
-            i++;
-        }
-    }
-    free(arraySwitches);
+    //         if (col < 2 && i % 2 == 0)
+    //         {
+    //             proxy3_setGameObjectLaser(numObjects++, x, y, x + 80, y, GCOL_YELLOW, true);
+    //         }
+    //         if (row < 2 && i % 2 == 1)
+    //         {
+    //             proxy3_setGameObjectLaser(numObjects++, x, y, x, y + 60, GCOL_YELLOW, true);
+    //         }
+    //         proxy3_addActor(EventSwitchOn, 0xff, arraySwitches[i], ActionDisableCollision, numObjects - 2, numObjects - 1, 0xff, 0xff, 0xff);
+    //         proxy3_addActor(EventSwitchOff, 0xff, arraySwitches[i], ActionEnableCollision, numObjects - 2, numObjects - 1, 0xff, 0xff, 0xff);
+    //         i++;
+    //     }
+    // }
+    // free(arraySwitches);
 
     proxy3_setGameObjectCircleOrientation(numObjects++, 35, 170, 8, ORIENTATION_DOWN, GCOL_RED, PAT_ARROW_DOWN, 0);
     proxy3_setGameObjectCircleOrientation(numObjects++, 320 - 35, 30, 8, ORIENTATION_UP, GCOL_RED, PAT_ARROW_UP, 0);

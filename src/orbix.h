@@ -252,7 +252,7 @@ void initStarPolygon_2();
 void setGameLetterCircle_3(byte id, float px, float py, float r, byte color, byte pattern);
 void lchar_put(int cx, char cy, char c, char spray);
 void initBonusLine_3();
-float qsqrt(float number);
+float qsqrt_3(float number);
 void updateFace_2();
 void deleteRender_1(byte id);
 void portalSwitch_2(byte id, byte targetId);
