@@ -118,7 +118,7 @@
 #define SUB_BALL_LOST 7
 #define SUB_LEVEL_FINISHED 8
 
-#define LARGE_TEXT_TIMER 400
+#define LARGE_TEXT_TIMER 100
 
 #define SND_SWITCH_ON 0x01
 #define SND_GRAVITY 0x03
@@ -378,7 +378,7 @@ RIRQCode bottom, top, rmenu;
 #define ActionDeactivateBall 12
 #define ActionKillBall 13
 
-#define TimeElapsingNorm 0.020
+#define TimeElapsingNorm 0.022
 #define TimeElapsingFast 0.040
 #define Drag 0.999
 #define Gravity 200
@@ -395,7 +395,7 @@ RIRQCode bottom, top, rmenu;
 #define ORIENTATION_LEFT 2
 #define ORIENTATION_RIGHT 3
 
-#define MaxObjects 60
+#define MaxObjects 64
 #define MaxLevels 13
 #define MaxScoreDisplay 16
 #define MaxBombDisplay 16
@@ -488,6 +488,7 @@ byte menuItem;
 // Storage for up to 64 particles
 Particle	particles[64];
 signed int cntMusic=0;
+byte bombDistance;
 
 // Heads of used and free list
 Particle	*	pfirst, * pfree;
@@ -3711,8 +3712,8 @@ void explodeBomb_2(byte id)
 
 	bombDisplay.x = x + (w / 2);
 	bombDisplay.y = y + (h / 2);
-	bombDisplay.radius = BombDistance / 8;
-	bombDisplay.origRadius = BombDistance / 8;
+	bombDisplay.radius = bombDistance / 8;
+	bombDisplay.origRadius = bombDistance / 8;
 	bombDisplay.color = GCOL_WHITE;
 
 	go->comp3 |= Component3_Exploded;
@@ -3732,7 +3733,7 @@ void explodeBomb_2(byte id)
 
 		if (IsBitSet(target->comp0, Component0_CircleCollider) && IsBitSet(target->comp0, Component0_CollideAble))
 		{
-			if(proxy21_doCirclesOverlap(go->px, go->py, BombDistance, target->px, target->py, target->radius))
+			if(proxy21_doCirclesOverlap(go->px, go->py, bombDistance, target->px, target->py, target->radius))
 			{	
 				if (IsBitSet(target->comp3, Component3_Bomb) && !IsBitSet(target->comp3, Component3_Exploded))
 				{
@@ -3747,8 +3748,8 @@ void explodeBomb_2(byte id)
 		}
 		if (IsBitSet(target->comp0, Component0_CapsuleCollider) && IsBitSet(target->comp0, Component0_CollideAble))
 		{
-			if(proxy21_doCirclesOverlap(go->px, go->py, BombDistance, target->px, target->py, target->radius) || 
-				proxy21_doCirclesOverlap(go->px, go->py, BombDistance, target->ax, target->ay, target->radius))
+			if(proxy21_doCirclesOverlap(go->px, go->py, bombDistance, target->px, target->py, target->radius) || 
+				proxy21_doCirclesOverlap(go->px, go->py, bombDistance, target->ax, target->ay, target->radius))
 			{	
 				if (IsBitSet(target->comp2, Component2_BombWall))
 				{
@@ -5698,6 +5699,7 @@ void preInitScene_3()
 	scoreQueueRear = -1;
 	cntMusic = 0;
 	timeElapsing = TimeElapsingNorm;
+	bombDistance = 60;
 
 	struct CollidingTimer *ct;
 
@@ -5966,11 +5968,11 @@ void initScene1_4()
     proxy3_setGameObjectLaser(numObjects++, 25, 125, 100, 125, GCOL_YELLOW, true);
     proxy3_setGameObjectLaser(numObjects++, 155, 125, 230, 125, GCOL_YELLOW, true);
     byte t1 = numObjects;
-    proxy3_setGameObjectCrackCircle(numObjects++, 128, 118, 8, 1.8, GCOL_ORANGE, 3, true);
-    proxy3_setGameObjectCrackCircle(numObjects++, 253, 118, 8, 1.8, GCOL_ORANGE, 3, true);
-    proxy3_setGameObjectCrackCircle(numObjects++, 63, 82, 8, 1.8, GCOL_ORANGE, 3, true);
+    proxy3_setGameObjectCrackCircle(numObjects++, 128, 114, 8, 1.8, GCOL_ORANGE, 2, true);
+    proxy3_setGameObjectCrackCircle(numObjects++, 253, 114, 8, 1.8, GCOL_ORANGE, 3, true);
+    proxy3_setGameObjectCrackCircle(numObjects++, 63, 86, 8, 1.8, GCOL_ORANGE, 3, true);
     byte t2 = numObjects;
-    proxy3_setGameObjectCrackCircle(numObjects++, 193, 82, 8, 1.8, GCOL_ORANGE, 3, true);
+    proxy3_setGameObjectCrackCircle(numObjects++, 193, 86, 8, 1.8, GCOL_ORANGE, 2, true);
 
     proxy3_setGameObjectCircleOrientation(numObjects++, 22, 60, 9, ORIENTATION_UP, GCOL_GREEN, PAT_ARROW_UP, 0);
     proxy3_setGameObjectCircleOrientation(numObjects++, 298, 140, 9, ORIENTATION_DOWN, GCOL_GREEN, PAT_ARROW_DOWN, 0);
@@ -6151,7 +6153,7 @@ void initScene4_4()
     {
         stepO += 15 * PI / 180;
         float step = stepO;
-        for (byte i = 0; i < 12; i++)
+        for (int i = 0; i < 12; i++)
         {
             step += 30 * PI / 180;
             float x = radius * cos(step) + 160;
@@ -6775,16 +6777,18 @@ void initScene12_5()
 {
     registerCallBank(5);
     balls = 12; // Number of balls for this level
-
+	bombDistance = 20;
     // Cannon setup
     proxy3_setGameObjectBall(numObjects++, 160, 22, 0, 0, 4, 0, true, true, VCOL_WHITE);
     proxy3_setGameObjectCannon(numObjects++, 160, 18, 18, ORIENTATION_DOWN, GCOL_DARK_GREY, true, true);
     proxy3_setGameObjectImage(numObjects++, IMG_LANDSCAPE1, 0, 22, 40, 3, true, GCOL_DARK_GREY, true);
 
-	proxy3_setGameObjectCannon(numObjects++, 40, 180, 12, ORIENTATION_RIGHT, GCOL_MED_GREY, false, false);
+	proxy3_setGameObjectCannon(numObjects++, 200, 180, 12, ORIENTATION_RIGHT, GCOL_MED_GREY, false, false);
 	proxy3_setGameObjectCannon(numObjects++, 280, 180, 12, ORIENTATION_LEFT, GCOL_MED_GREY, false, false);
+	proxy3_setGameObjectCannon(numObjects++, 200, 20, 12, ORIENTATION_RIGHT, GCOL_MED_GREY, false, false);
+	proxy3_setGameObjectCannon(numObjects++, 280, 20, 12, ORIENTATION_LEFT, GCOL_MED_GREY, false, false);
 
-	const int size=13;
+	const int size=12;
     float a = 13.0; // Amplitude8
     float k = 4.0; // Anzahl der Blütenblätter
     float theta;
@@ -6792,35 +6796,33 @@ void initScene12_5()
 	byte p1=0;
 	byte p2=0; 
 
-    // Winkelwerte initialisieren
-    // Rosettenkurve berechnen
+   	proxy3_setGameObjectPortal(numObjects++, 240, 100, 8, true);
 	for(byte j = 0; j< 3; j++)
 	{
 		if(j == 0)
 		{
-			k=5.7;
+			k=6.0;
 		}
 		else if(j == 1)
 		{
-			k=6.4;
+			k=7;
 		}
 		else if(j == 2)
 		{
-			k=6.05;
+			k=6.5;
 		}
 		theta = 0 * (2 * PI / size);
 		r = a * (0.4 * cos((4 * theta)) + PI + 3 * sin(k));
-		xa = 160 + r * cos(theta) * 2.3;
-		ya = 120 + r * sin(theta);
+		xa = 90 + r * cos(theta);
+		ya = 100 + r * sin(theta);
 		byte l=0;
-    	proxy3_setGameObjectPortal(numObjects++, 160, 180, 8, true);
-
+ 
 		for (byte i = 0; i < size + 1; i++)
 		{
 			theta = i * (2 * PI / size);
 			r = a * (0.4 * cos((4 * theta)) + PI + 3 * sin(k));
-			x = 160 + r * cos(theta) * 2.3;
-			y = 120 + r * sin(theta);
+			x = 90 + r * cos(theta);
+			y = 100 + r * sin(theta);
 			//proxy3_setGameObjectTimedValuableCircle(numObjects++, 160 + y, 100 + x, 4, true); 
 			if(j==0)
 			{
@@ -6832,21 +6834,21 @@ void initScene12_5()
 			}
 			else if(j == 2)
 			{
-				if(i % 8 == 0)
+				if(i % 6 == 0)
 				{
 					if(l == 0)
 					{
 						p1=numObjects;
 						proxy3_setGameObjectPortal(numObjects++, x, y, 8, false);
 					}
-					else
+					else if(l == 1)
 					{
 						p2=numObjects;
 						proxy3_setGameObjectPortal(numObjects++, x, y, 8, true);
 					}
 					l++;
 				}
-				else if(i % 4 == 0)
+				else if(i % 3 == 0)
 				{
 					proxy3_setGameObjectBombCircle(numObjects++, x,y,7,1.1, GCOL_LT_RED);
 				}
@@ -6858,12 +6860,18 @@ void initScene12_5()
 			xa = x;
 			ya = y;
 		}
-		
-	    proxy3_addActor(EventCollide, 0xff, numObjects, ActionTimedRollDeactivateCollideable, p1, p2, 0xff, 0xff, p1);
+
+		byte p3 = numObjects;
+		proxy3_setGameObjectSwitchCircle(numObjects++, 90, 100, 12, 1.5, GCOL_YELLOW, false);
+	
+	    proxy3_addActor(EventSwitchOn, 0xff, p3, ActionEnableCollision, p1, p1, 0xff, 0xff, 0xff);
+	    proxy3_addActor(EventSwitchOn, 0xff, p3, ActionDisableCollision, p2, p2, 0xff, 0xff, 0xff);
+	    proxy3_addActor(EventSwitchOff, 0xff, p3, ActionDisableCollision, p1, p1, 0xff, 0xff, 0xff);
+	    proxy3_addActor(EventSwitchOff, 0xff, p3, ActionEnableCollision, p2, p2, 0xff, 0xff, 0xff);
 	}
 
 	// 254/146
-	// 93/74
+	// 93/748
 	// 241/304
 
     // Adding large text to announce level start
