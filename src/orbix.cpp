@@ -405,7 +405,7 @@ RIRQCode bottom, top, rmenu;
 #define SIM_RUN 4
 
 
-#define MaxObjects 60
+#define MaxObjects 64
 #define MaxLevels 14
 #define MaxScoreDisplay 16
 #define MaxBombDisplay 16
@@ -414,7 +414,7 @@ RIRQCode bottom, top, rmenu;
 #define MaxFakes 4
 #define MaxDepObjects 4
 #define MaxColTimers 3
-#define MaxCntMusic 2000
+#define MaxCntMusic 20000
 #define MaxSimTime 30
 #define MaxSimEndTime 20
 
@@ -506,6 +506,7 @@ byte simEndCnt;
 bool hasSimHit, simDone;
 float saveSimPx, saveSimPy;
 bool simLeftRight;
+signed char tx;
 
 // Heads of used and free list
 Particle	*	pfirst, * pfree;
@@ -1523,6 +1524,12 @@ void music_play(void)
 
 void music_ff(void)
 {
+	__asm
+	{
+		lda	#$0
+		jsr $c006
+	}
+
 	for(signed int i=0;i<cntMusic;i++)
 	{
 		__asm
@@ -1530,14 +1537,17 @@ void music_ff(void)
 			jsr		$c003
 		}
 	}
+	__asm
+	{
+		lda	#$0f
+		jsr $c006
+	}
 }
 
 __native inline bool IsBitSet(const byte comp, const byte test)
 {
 	return 0 != (comp & test);
 }
-
-// from QUAKE3
 
 void copyTitle()
 {
@@ -1779,7 +1789,6 @@ __interrupt void joy_interrupt()
 		}
 	}
 
-	signed char tx;
 	if(tray > 127)
 	{
 		tx = -sintab[tray - 128];
@@ -1962,8 +1971,8 @@ void frameLoop_1()
 	{
 		highlight.timer = 0xff;
 		timer = 0;
-		proxy17_copyTitle();
 		rirq_stop();
+		proxy17_copyTitle();
 		proxy_memcpy(8, 1, Buffer, Music, 0xF00);
 		playSubtune(0);
 		rasterMenuInit(true);
@@ -3081,12 +3090,12 @@ void updatePhysics_1(byte id)
 		&& go->orientation == ORIENTATION_UP && state != GS_FINALIZE)
 	{
 		go->orientation = ORIENTATION_DOWN;
-		posXTray = sintab[tray] + 160;
+		posXTray = tx + 160;
 		if ((go->px < posXTray - 30 && go->px >= posXTray - 48) || (go->px > posXTray + 30 && go->px <= posXTray + 48))
 		{
-			if (go->px < posXTray && sintab[tray] < 0 || go->px > posXTray && sintab[tray] > 0)
+			if (go->px < posXTray && tx < 0 || go->px > posXTray && tx > 0)
 			{
-				go->ax += sintab[tray];
+				go->ax += tx;
 			}
 			playSfx(SND_BUMP);
 			go->vy = -2 * go->vy;
@@ -7458,14 +7467,14 @@ int main(void)
 	scoreQueueRear = -1;
 	bombQueueFront = -1;
 	bombQueueRear = -1;
-	globalOrientation = ORIENTATION_DOWN;
+	//globalOrientation = ORIENTATION_DOWN;
 	traySprite = 5;
 	posYTray = 229;
-	sid.fmodevol = 15;
-	faceState = FA_WATCH;
-	faceTimer = 0xff;
-	ballSide = 0;
-	bumptimer = 0;
+	//sid.fmodevol = 15;
+	//faceState = FA_WATCH;
+	//faceTimer = 0xff;
+	//ballSide = 0;
+	//bumptimer = 0;
 
 	// Copy assets
 
@@ -7491,8 +7500,8 @@ int main(void)
 	spr_init(Color1);
 
 	bm_init(&Screen, Hires, 40, 25);
-	proxy0_spr_set(6, true, 160 - 23 + sintab[tray], posYTray, 64 + traySprite, VCOL_WHITE, false, true, false);
-	proxy0_spr_set(7, true, 160 + 23 + sintab[tray], posYTray, 64 + traySprite + 1, VCOL_WHITE, false, true, false);
+	proxy0_spr_set(6, true, 160 - 23, posYTray, 64 + traySprite, VCOL_WHITE, false, true, false);
+	proxy0_spr_set(7, true, 160 + 23, posYTray, 64 + traySprite + 1, VCOL_WHITE, false, true, false);
 
 	mmap_set(MMAP_ROM);
 //	string_write_2(0, 0, scoreTxt, VCOL_WHITE);
@@ -7508,7 +7517,7 @@ int main(void)
 	eflash.bank = 1;
 	highlight.timer = 0;
 	level = 13;
-	breakMusic = false;
+	//breakMusic = false;
 
 	state = GS_TITLE_INIT;
  
