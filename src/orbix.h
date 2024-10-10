@@ -23,7 +23,9 @@ enum GameState
 	GS_TITLE_INIT = 16,
 	GS_TITLE = 17,
 	GS_TITLE_FADE_OUT = 18,
-	GS_INTRO = 19
+	GS_INTRO = 19,
+	GS_SIMULATE = 20,
+	GS_SIMULATE_FINISH = 21,
 };
 
 enum FaceState
@@ -37,9 +39,9 @@ enum FaceState
 struct Box
 {
 	int x;
-	byte y;
+	int y;
 	int width;
-	byte height;
+	int height;
 };
 
 struct CollisionTile
@@ -237,7 +239,6 @@ byte change_low_nibble(byte b, byte new_low_nibble);
 void copyCharset();
 void setTunes_2(bool isOn);
 void drawImageUnclipped(byte* byte_stream, byte x, byte y, byte width, byte height);
-
 void colorAreaUnclipped(byte x, byte y, byte w, byte h, byte c, bool isHires); 
 void startHighlight_2(byte x, byte y, byte w, byte h, bool isHires, byte restoreColor);
 void updateDestroyed_2(byte id);
@@ -245,6 +246,7 @@ void pix_set(unsigned px, unsigned py, bool isConfetti);
 void pix_clr_2(unsigned px, unsigned py);
 void particle_init_2(void);
 void particle_add_2(int px, int py, int vx, int vy);
+void particle_remove_2(bool isConfetti);
 void particle_move_2(byte grav, bool isConfetti);
 int rnorm_2(byte wide);
 void doFirework_2(byte type);
@@ -277,6 +279,9 @@ inline void registerCallBank(byte fromBank);
 void killBall_2(byte id);
 void titleFadeOut_2();
 void intro_2();
+byte simulatePhysics_3(byte id);
+void restoreSimulationFinish_3(byte id);
+void saveSimulationStart_3(byte id);
 
 void initScene0_4();
 void initScene1_4();
@@ -291,6 +296,7 @@ void initScene9_4();
 void initScene10_5();
 void initScene11_5();
 void initScene12_5();
+void initScene13_5();
 
 
 // proxy

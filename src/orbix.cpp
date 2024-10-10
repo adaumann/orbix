@@ -149,8 +149,11 @@
 #define IMG_LANDSCAPE3 8
 #define IMG_SHIP1 9
 
-const sbyte sintab[256] = {
-	0, 3, 6, 9, 12, 16, 19, 22, 25, 28, 31, 34, 37, 40, 43, 46, 49, 51, 54, 57, 60, 63, 65, 68, 71, 73, 76, 78, 81, 83, 85, 88, 90, 92, 94, 96, 98, 100, 102, 104, 106, 107, 109, 111, 112, 113, 115, 116, 117, 118, 120, 121, 122, 122, 123, 124, 125, 125, 126, 126, 126, 127, 127, 127, 127, 127, 127, 127, 126, 126, 126, 125, 125, 124, 123, 122, 122, 121, 120, 118, 117, 116, 115, 113, 112, 111, 109, 107, 106, 104, 102, 100, 98, 96, 94, 92, 90, 88, 85, 83, 81, 78, 76, 73, 71, 68, 65, 63, 60, 57, 54, 51, 49, 46, 43, 40, 37, 34, 31, 28, 25, 22, 19, 16, 12, 9, 6, 3, 0, -3, -6, -9, -12, -16, -19, -22, -25, -28, -31, -34, -37, -40, -43, -46, -49, -51, -54, -57, -60, -63, -65, -68, -71, -73, -76, -78, -81, -83, -85, -88, -90, -92, -94, -96, -98, -100, -102, -104, -106, -107, -109, -111, -112, -113, -115, -116, -117, -118, -120, -121, -122, -122, -123, -124, -125, -125, -126, -126, -126, -127, -127, -127, -127, -127, -127, -127, -126, -126, -126, -125, -125, -124, -123, -122, -122, -121, -120, -118, -117, -116, -115, -113, -112, -111, -109, -107, -106, -104, -102, -100, -98, -96, -94, -92, -90, -88, -85, -83, -81, -78, -76, -73, -71, -68, -65, -63, -60, -57, -54, -51, -49, -46, -43, -40, -37, -34, -31, -28, -25, -22, -19, -16, -12, -9, -6, -3};
+// const sbyte sintab[256] = {
+// 	0, 3, 6, 9, 12, 16, 19, 22, 25, 28, 31, 34, 37, 40, 43, 46, 49, 51, 54, 57, 60, 63, 65, 68, 71, 73, 76, 78, 81, 83, 85, 88, 90, 92, 94, 96, 98, 100, 102, 104, 106, 107, 109, 111, 112, 113, 115, 116, 117, 118, 120, 121, 122, 122, 123, 124, 125, 125, 126, 126, 126, 127, 127, 127, 127, 127, 127, 127, 126, 126, 126, 125, 125, 124, 123, 122, 122, 121, 120, 118, 117, 116, 115, 113, 112, 111, 109, 107, 106, 104, 102, 100, 98, 96, 94, 92, 90, 88, 85, 83, 81, 78, 76, 73, 71, 68, 65, 63, 60, 57, 54, 51, 49, 46, 43, 40, 37, 34, 31, 28, 25, 22, 19, 16, 12, 9, 6, 3, 0, -3, -6, -9, -12, -16, -19, -22, -25, -28, -31, -34, -37, -40, -43, -46, -49, -51, -54, -57, -60, -63, -65, -68, -71, -73, -76, -78, -81, -83, -85, -88, -90, -92, -94, -96, -98, -100, -102, -104, -106, -107, -109, -111, -112, -113, -115, -116, -117, -118, -120, -121, -122, -122, -123, -124, -125, -125, -126, -126, -126, -127, -127, -127, -127, -127, -127, -127, -126, -126, -126, -125, -125, -124, -123, -122, -122, -121, -120, -118, -117, -116, -115, -113, -112, -111, -109, -107, -106, -104, -102, -100, -98, -96, -94, -92, -90, -88, -85, -83, -81, -78, -76, -73, -71, -68, -65, -63, -60, -57, -54, -51, -49, -46, -43, -40, -37, -34, -31, -28, -25, -22, -19, -16, -12, -9, -6, -3};
+
+const sbyte sintab[128] = {
+	0, 3, 6, 9, 12, 16, 19, 22, 25, 28, 31, 34, 37, 40, 43, 46, 49, 51, 54, 57, 60, 63, 65, 68, 71, 73, 76, 78, 81, 83, 85, 88, 90, 92, 94, 96, 98, 100, 102, 104, 106, 107, 109, 111, 112, 113, 115, 116, 117, 118, 120, 121, 122, 122, 123, 124, 125, 125, 126, 126, 126, 127, 127, 127, 127, 127, 127, 127, 126, 126, 126, 125, 125, 124, 123, 122, 122, 121, 120, 118, 117, 116, 115, 113, 112, 111, 109, 107, 106, 104, 102, 100, 98, 96, 94, 92, 90, 88, 85, 83, 81, 78, 76, 73, 71, 68, 65, 63, 60, 57, 54, 51, 49, 46, 43, 40, 37, 34, 31, 28, 25, 22, 19, 16, 12, 9, 6, 3 };
 
 #pragma data(sprites)
 
@@ -379,9 +382,9 @@ RIRQCode bottom, top, rmenu;
 #define ActionKillBall 13
 
 #define TimeElapsingNorm 0.022
-#define TimeElapsingFast 0.040
+#define TimeElapsingFast 0.030
 #define Drag 0.999
-#define Gravity 200
+#define Gravity 300
 #define Stable 1
 #define CannonAngleStep 0.06981
 #define CannonPower 25
@@ -395,8 +398,15 @@ RIRQCode bottom, top, rmenu;
 #define ORIENTATION_LEFT 2
 #define ORIENTATION_RIGHT 3
 
-#define MaxObjects 64
-#define MaxLevels 13
+#define SIM_CHANGE 0
+#define SIM_FIRE 1
+#define SIM_END 2
+#define SIM_DONE 3
+#define SIM_RUN 4
+
+
+#define MaxObjects 60
+#define MaxLevels 14
 #define MaxScoreDisplay 16
 #define MaxBombDisplay 16
 #define MaxActors 16
@@ -405,6 +415,9 @@ RIRQCode bottom, top, rmenu;
 #define MaxDepObjects 4
 #define MaxColTimers 3
 #define MaxCntMusic 2000
+#define MaxSimTime 30
+#define MaxSimEndTime 20
+
 
 struct GameObject gameObjects[MaxObjects];
 struct GameObject fakeBalls[MaxFakes];
@@ -489,6 +502,10 @@ byte menuItem;
 Particle	particles[64];
 signed int cntMusic=0;
 byte bombDistance;
+byte simEndCnt;
+bool hasSimHit, simDone;
+float saveSimPx, saveSimPy;
+bool simLeftRight;
 
 // Heads of used and free list
 Particle	*	pfirst, * pfree;
@@ -499,6 +516,21 @@ static char * Hirows[25];
 // Pixel masks
 static const char setmask[8] = {0x80, 0x40, 0x20, 0x10, 0x08, 0x04, 0x02, 0x01};
 static const char clrmask[8] = {0x7f, 0xbf, 0xdf, 0xef, 0xf7, 0xfb, 0xfd, 0xfe};
+
+__noinline void proxy32_particle_init()
+{
+	eflash.bank = 2;
+	particle_init_2();
+	eflash.bank = 3;
+}
+
+__noinline void proxy32_particle_remove(bool isConfetti)
+{
+	eflash.bank = 2;
+	particle_remove_2(isConfetti);
+	eflash.bank = 3;
+
+}
 
 
 __noinline void proxy12_dispatchEvent(byte event, byte senderId, byte p1, byte p2)
@@ -522,11 +554,25 @@ __noinline void proxy12_addFakeBalls(float px, float py, float vx, float vy, flo
 	eflash.bank = 1;
 }
 
+__noinline void proxy32_addFakeBalls(float px, float py, float vx, float vy, float radius, float efficiency)
+{
+	eflash.bank = 2;
+	addFakeBalls_2(px, py, vx, vy, radius, efficiency);
+	eflash.bank = 3;
+}
+
 __noinline void proxy12_addCollidingPairs(byte go1, byte go2, byte gofake)
 {
 	eflash.bank = 2;
 	addCollidingPairs_2(go1, go2, gofake);
 	eflash.bank = 1;
+}
+
+__noinline void proxy32_addCollidingPairs(byte go1, byte go2, byte gofake)
+{
+	eflash.bank = 2;
+	addCollidingPairs_2(go1, go2, gofake);
+	eflash.bank = 3;
 }
 
 __noinline void proxy12_handleScore(byte id)
@@ -1136,6 +1182,13 @@ __noinline void proxy45_initScene12()
     eflash.bank = 4;
 }
 
+__noinline void proxy45_initScene13()
+{
+    eflash.bank = 5;
+    initScene13_5();
+    eflash.bank = 4;
+}
+
 __noinline void proxy17_copyTitle()
 {
     eflash.bank = 7;
@@ -1224,6 +1277,15 @@ __noinline bool proxy21_doCirclesOverlap(float x1, float y1, float r1, float x2,
     eflash.bank = 1;
 	bool r = doCirclesOverlap_1(x1, y1, r1, x2, y2, r2);
     eflash.bank = 2;
+	return r;
+
+}
+
+__noinline bool proxy31_doCirclesOverlap(float x1, float y1, float r1, float x2, float y2, float r2)
+{
+    eflash.bank = 1;
+	bool r = doCirclesOverlap_1(x1, y1, r1, x2, y2, r2);
+    eflash.bank = 3;
 	return r;
 
 }
@@ -1351,6 +1413,36 @@ __noinline float proxy23_qsqrt(float number)
 	eflash.bank = 2;
 	return ret;
 }
+
+__noinline bool proxy13_simulatePhysics(byte id)
+{
+	eflash.bank = 3;
+	byte ret = simulatePhysics_3(id);
+	eflash.bank = 1;
+	return ret;
+}
+
+__noinline void proxy23_saveSimulationStart(byte id)
+{
+	eflash.bank = 3;
+	saveSimulationStart_3(id);
+	eflash.bank = 2;
+}
+
+__noinline void proxy13_restoreSimulationFinish(byte id)
+{
+	eflash.bank = 3;
+	restoreSimulationFinish_3(id);
+	eflash.bank = 1;
+}
+
+__noinline void proxy12_particle_add(int px, int py, int vx, int vy)
+{
+	eflash.bank = 2;
+	particle_add_2(px, py, vx, vy);
+	eflash.bank = 1;
+}
+
 
 
 inline void registerCallBank(byte fromBank)
@@ -1687,19 +1779,28 @@ __interrupt void joy_interrupt()
 		}
 	}
 
+	signed char tx;
+	if(tray > 127)
+	{
+		tx = -sintab[tray - 128];
+	}
+	else
+	{
+		tx = sintab[tray];
+	}
 	if(state != GS_RUN_COMPLETED && state != GS_FINALIZE)
 	{
+		spr_set(6, true, 160 - 23 + tx, posYTray, 64 + traySprite, VCOL_WHITE, false, true, false);
+		spr_set(7, true, 160 + 23 + tx, posYTray, 64 + traySprite + 1, VCOL_WHITE, false, true, false);
 		if (timer % 2 == 0)
 		{
 			tray++;
 		}
-		spr_set(6, true, 160 - 23 + sintab[tray], posYTray, 64 + traySprite, VCOL_WHITE, false, true, false);
-		spr_set(7, true, 160 + 23 + sintab[tray], posYTray, 64 + traySprite + 1, VCOL_WHITE, false, true, false);
 	}
 	else
 	{
-		spr_set(6, true, 160 - 23 + sintab[tray], 255, 64 + traySprite, VCOL_WHITE, false, true, false);
-		spr_set(7, true, 160 + 23 + sintab[tray], 255, 64 + traySprite + 1, VCOL_WHITE, false, true, false);
+		spr_set(6, true, 160 - 23 + tx, 255, 64 + traySprite, VCOL_WHITE, false, true, false);
+		spr_set(7, true, 160 + 23 + tx, 255, 64 + traySprite + 1, VCOL_WHITE, false, true, false);
 	}
 }
 
@@ -1715,11 +1816,11 @@ void pix_set(unsigned px, unsigned py, bool isConfetti)
 
 	// Set the pixel
 	dp[py & 7] ^= setmask[px & 7];
-	if(isConfetti || py > 150)
+	if(isConfetti)
 	{
-		dp[py + 1 & 7] ^= setmask[px & 7];
-		dp[py & 7] ^= setmask[px + 1 & 7];
-		dp[py + 1 & 7] ^= setmask[px + 1 & 7];
+		dp[(py + 1) & 7] ^= setmask[px & 7];
+		dp[py & 7] ^= setmask[(px + 1) & 7];
+		dp[(py + 1) & 7] ^= setmask[(px + 1) & 7];
 	}
 }
 
@@ -2058,7 +2159,6 @@ void gameLoop_1()
 			{
 				proxy12_execCollisionTimer(i);
 			}
-
 		}
 		startValueableObjects = currentValueableObjects;
 		orbzScore = 0;
@@ -2066,6 +2166,32 @@ void gameLoop_1()
 		proxy12_executeLargeTextTimer();
 		delayedActions_1();
 		updateCollisions_1();
+	}
+	else if (state == GS_SIMULATE)
+	{
+		currentValueableObjects = 0xff;
+		updateRender_1(mainBall, false);
+		byte endSim = proxy13_simulatePhysics(mainBall);
+		updateCollisions_1();
+		if(endSim == SIM_CHANGE)
+		{
+			state = GS_SIMULATE_FINISH;
+		}
+		if(endSim == SIM_END)
+		{
+			simDone = true;
+		}
+		if(endSim == SIM_FIRE)
+		{
+
+		}
+
+	}
+	else if( state == GS_SIMULATE_FINISH)
+	{
+		currentValueableObjects = 0xff;
+		proxy13_restoreSimulationFinish(mainBall);
+		state = GS_FIRE;
 	}
 	else if (state == GS_RUN)
 	{
@@ -2327,15 +2453,17 @@ void gameLoop_1()
 			state = GS_RUN_FINISH_INIT;
 		}
 	}
-
-	valueableObjects = currentValueableObjects;
-	if(valueableObjects == 0 && !completed && state != GS_FINALIZE)
+	if(state != GS_FINALIZE)
 	{
-		completed = true;
-		faceState = FA_SUNNY;
-		faceTimer = 64;
+		valueableObjects = currentValueableObjects;
+		if(valueableObjects == 0 && !completed)
+		{
+			completed = true;
+			faceState = FA_SUNNY;
+			faceTimer = 64;
 
-		state = GS_RUN_COMPLETED_INIT;
+			state = GS_RUN_COMPLETED_INIT;
+		}
 	}
 }
 
@@ -2355,7 +2483,18 @@ void updateRender_1(byte id, bool init)
 	{
 		if(!(state == GS_FIRE && id == mainBall))
 		{
-			proxy0_spr_set(go->spriteNum, true, (int)go->px + 12, (int)go->py + 40, go->pattern, go->color, false, false, false);
+			if(state == GS_SIMULATE)
+			{
+				int px = (int)go->px * 64;
+				int py = (int)go->py * 64;
+
+				proxy12_particle_add(px, py, 0, 0);
+				proxy0_pix_set(px >> 6, py >> 6, false);
+			}
+			else
+			{
+				proxy0_spr_set(go->spriteNum, true, (int)go->px + 12, (int)go->py + 40, go->pattern, go->color, false, false, false);
+			}	
 		}
 	}
 	if(init && IsBitSet(go->comp3, Component3_DrawImage))
@@ -2844,7 +2983,7 @@ void updatePhysics_1(byte id)
 		}
 		else
 		{
-			if ((int)(go->vx) == 0 && (int)(go->vy - 2) == 0)
+			if ((int)(go->vx) == 0 && (int)(go->vy) - 4 * globalOrientation == 0)
 			{
 				stuckCnt++;
 			}
@@ -2856,7 +2995,10 @@ void updatePhysics_1(byte id)
 	}
 	if(id == mainBall && timer % 32 == 0)
 	{
-		if ((int)(go->vx) == 0 && (int)(go->vy - 2) == 0 && !IsBitSet(go->comp2, Component2_Destroyed))
+		// memset(Color2, 0x20, 80);
+		// proxy12_integer_write(9,0,go->vx);
+		// proxy12_integer_write(13,0,go->vy);
+		if ((int)(go->vx) == 0 && (int)(go->vy) - 4 * globalOrientation == 0 && !IsBitSet(go->comp2, Component2_Destroyed))
 		{
 			stuckCnt = 1;
 			playSfx(SND_CATCH);
@@ -3115,7 +3257,8 @@ void updatePhysics_1(byte id)
 						// Collision has occurred - treat collision point as a ball that cannot move. To make this
 						// compatible with the dynamic resolution code below, we add a fake ball with an infinite mass
 						// so it behaves like a solid object when the momentum calculations are performed
-						proxy12_addFakeBalls(fClosestPointX, fClosestPointY, 0, 0, target->radius + 1, go->efficiency);
+						proxy12_addFakeBalls(fClosestPointX, fClosestPointY, -go->vx, -go->vy, target->radius, target->efficiency);
+//						proxy12_addFakeBalls(fClosestPointX, fClosestPointY, 0, 0, target->radius, target->efficiency);
 						//proxy12_addFakeBalls(fClosestPointX, fClosestPointY, go->vx * 0.5, go->vy * 0.5, target->radius, go->efficiency);
 
 						proxy12_dispatchEvent(EventCollide, loopc, 0xff, 0xff);
@@ -3167,6 +3310,7 @@ void updateCollisions_1()
 {
 	struct GameObject *b1;
 	struct GameObject *b2 = nullptr;
+	byte z=0;
 
 	for (byte i = 0; i < numColPairs; i++)
 	{
@@ -3183,6 +3327,11 @@ void updateCollisions_1()
 		if (fakeIndex != 0xff)
 		{
 			b2 = &fakeBalls[fakeIndex];
+			// z++;
+			// if(z == 1)
+			// {
+			// 	continue;
+			// }
 		}
 
 		// Distance between balls
@@ -3216,19 +3365,31 @@ void updateCollisions_1()
 		{
 			mass2 = 4096;
 		}
+
+		float m1 = b2->efficiency * (dpNorm1 * (mass1 - mass2) + 2.0 * mass2 * dpNorm2) / (mass1 + mass2);
+		float m2 = b2->efficiency * (dpNorm2 * (mass2 - mass1) + 2.0 * mass1 * dpNorm1) / (mass1 + mass2);
+
+		// Update ball velocities
+		b1->vx = (tx * dpTan1 + nx * m1);
+		b1->vy = (ty * dpTan1 + ny * m1);
+		b2->vx = (tx * dpTan2 + nx * m2);
+		b2->vy = (ty * dpTan2 + ny * m2);
+
  
-		//float m1 =  (dpNorm1 * (b1->mass - b2->mass) + 2.0 * b2->mass * dpNorm2) / (b1->mass + b2->mass);
-		float m1 =  (dpNorm1 * (mass1 - mass2) + 2.0 * mass2 * dpNorm2) / (mass1 + mass2);
-		b1->vx = tx * dpTan1 + nx * m1 * b2->efficiency;
-		b1->vy = ty * dpTan1 + ny * m1 * b2->efficiency;
-		if (IsBitSet(b2->comp0, Component0_Physics))
-		{
-//			float m2 =  (dpNorm2 * (b2->mass - b1->mass) + 2.0 * b1->mass * dpNorm1) / (b1->mass + b2->mass);
-			float m2 =  (dpNorm2 * (mass2 - mass1) + 2.0 * mass1 * dpNorm1) / (mass1 + mass2);
-			b2->vx = tx * dpTan2 + nx * m2 * b1->efficiency;
-			b2->vy = ty * dpTan2 + ny * m2 * b1->efficiency;
-		}
+// 		//float m1 =  (dpNorm1 * (b1->mass - b2->mass) + 2.0 * b2->mass * dpNorm2) / (b1->mass + b2->mass);
+// 		float m1 =  (dpNorm1 * (mass1 - mass2) + 2.0 * mass2 * dpNorm2) / (mass1 + mass2);
+// 		b1->vx = tx * dpTan1 + nx * m1 * b2->efficiency;
+// 		b1->vy = ty * dpTan1 + ny * m1 * b2->efficiency;
+// 		if (IsBitSet(b2->comp0, Component0_Physics))
+// 		{
+// //			float m2 =  (dpNorm2 * (b2->mass - b1->mass) + 2.0 * b1->mass * dpNorm1) / (b1->mass + b2->mass);
+// 			float m2 =  (dpNorm2 * (mass2 - mass1) + 2.0 * mass1 * dpNorm1) / (mass1 + mass2);
+// 			b2->vx = tx * dpTan2 + nx * m2 * b1->efficiency;
+// 			b2->vy = ty * dpTan2 + ny * m2 * b1->efficiency;
+// 		}
 	}
+	numColPairs = 0;
+	numFakes = 0;
 }
 
 #pragma code(bcode2)
@@ -3568,6 +3729,7 @@ void updateCannon_2(byte id)
 	go = &gameObjects[id];
 
 	currentAngleStep = 0;
+	bool doSim = false;
 
 	switch (go->orientation)
 	{
@@ -3581,6 +3743,11 @@ void updateCannon_2(byte id)
 			if (joyx[0] > 0)
 			{
 				currentAngleStep = -CannonAngleStep;
+			}
+			if(joyy[0] != 0)
+			{
+				doSim = true;
+				simLeftRight = false;
 			}
 		}
 		else
@@ -3599,6 +3766,11 @@ void updateCannon_2(byte id)
 			{
 				currentAngleStep = -CannonAngleStep;
 			}
+			if(joyy[0] != 0)
+			{
+				doSim = true;
+				simLeftRight = false;
+			}
 		}
 		else
 		{
@@ -3616,6 +3788,12 @@ void updateCannon_2(byte id)
 			{
 				currentAngleStep = -CannonAngleStep;
 			}
+			if(joyx[0] != 0)
+			{
+				doSim = true;
+				simLeftRight = true;
+			}
+
 		}
 		else
 		{
@@ -3633,12 +3811,28 @@ void updateCannon_2(byte id)
 			{
 				currentAngleStep = -CannonAngleStep;
 			}
+			if(joyx[0] != 0)
+			{
+				doSim = true;
+				simLeftRight = true;
+			}
 		}
 		else
 		{
 			go->cannonVector.v[0] = 0;
 		}
 		break;
+	}
+	if(doSim)
+	{
+		proxy23_saveSimulationStart(mainBall);			
+		struct GameObject *goBall;
+		goBall = &gameObjects[mainBall];
+		goBall->px = go->px + go->cannonVector.v[0] * 1.8;
+		goBall->py = go->py + go->cannonVector.v[1] * 1.8;
+		goBall->vx = go->cannonVector.v[0] * CannonPower;
+		goBall->vy = go->cannonVector.v[1] * CannonPower;
+		state = GS_SIMULATE;			
 	}
 
 	if(id == mainCannon)
@@ -3830,8 +4024,6 @@ void execCollisionTimer_2(byte id)
 
 void addFakeBalls_2(float px, float py, float vx, float vy, float radius, float efficiency)
 {
-	
-
 	if (numFakes < MaxFakes)
 	{
 		fakeBalls[numFakes].spriteNum = 0xff;
@@ -4605,6 +4797,48 @@ int rnorm_2(byte wide)
 	return  wide * (l0 + l1 + l2 + l3);
 }
 
+void particle_remove_2(bool isConfetti)
+{
+	// Start with first particle, remember previous
+	// particle for list removal
+	Particle	*	p = pfirst, * pp = nullptr;
+
+	// Loop over all particles in used list
+	byte i=0;
+	while (p)
+	{
+		// Clear previous particle image, using 10.6 fixed point
+		proxy0_pix_set(p->px >> 6, p->py >> 6, isConfetti);
+		p = p->next;
+		if(i++ == 63)
+		{
+			p = nullptr;
+		}
+		// Particle	*	pn = p->next;
+
+		// Remove from used list
+		// if (pp)
+		// 	pp->next = pn;
+		// else
+		// 	pfirst = pn;
+
+		// Attach to free list
+		// p->next = pfree;
+		// pfree = p;
+
+		// Advance to next particle
+		// p = pn;
+	}
+
+	pfirst = nullptr;
+	pfree = particles;
+
+	// Link all particles in free list
+	for(int i=0; i<63; i++)
+		particles[i].next = particles + i + 1;
+
+}
+
 // Move particles in used list
 void particle_move_2(byte grav, bool isConfetti)
 {
@@ -4841,6 +5075,199 @@ void titleFadeOut_2()
 
 // ---------------- BANK 3 Scene
 
+void saveSimulationStart_3(byte id)
+{
+	struct GameObject *go;
+	go = &gameObjects[id];
+	saveSimPx = go->px;
+	saveSimPy = go->py;
+	hasSimHit = false;
+	simEndCnt = 0;
+	simDone = false;
+	proxy32_particle_init();
+}
+
+void restoreSimulationFinish_3(byte id)
+{
+	struct GameObject *go;
+	go = &gameObjects[id];
+	go->px = saveSimPx;
+	go->py = saveSimPy;
+	go->ax = 0;
+	go->ay = 0;
+	go->vx = 0;
+	go->vy = 0;
+	proxy32_particle_remove(false);	
+}
+
+
+byte simulatePhysics_3(byte id)
+{
+	struct GameObject *go;
+	go = &gameObjects[id];
+
+	if(!simLeftRight  && joyx[0] != 0) 	
+	{
+		return SIM_CHANGE;
+	}
+	if(simLeftRight && joyy[0] != 0) 	
+	{
+		return SIM_CHANGE;
+	}
+	if(joyb[0] != 0)
+	{
+		return SIM_CHANGE;
+	}
+	if(simDone)
+	{
+		return SIM_CHANGE;
+	}
+
+	if(hasSimHit == true)
+	{
+		simEndCnt++;
+		if(simEndCnt > MaxSimEndTime)
+		{
+			return SIM_END;
+		}
+	} 	
+
+	go->ax = -go->vx; // * Drag;						// Apply drag and gravity
+	go->ay = -go->vy /* Drag  */ + Gravity * globalOrientation;
+
+	go->vx += go->ax * timeElapsing; //* go->fSimTimeRemaining;	// Update Velocity
+	go->vy += go->ay * timeElapsing; //* go->fSimTimeRemaining;
+
+	go->px += go->vx * timeElapsing; //* go->fSimTimeRemaining;	// Update position
+	go->py += go->vy * timeElapsing; //* go->fSimTimeRemaining;
+
+	go->boundingBox = getBoundingBoxCircle_3(go->px, go->py, 4,8);
+
+	// Crudely wrap go->s to screen - note this cause issues when collisions occur on screen boundaries
+	if (go->px < 6 || go->px >= ScreenWidth - 6)
+	{
+		go->px = go->px < 6 ? 6 : ScreenWidth - 6;
+		go->vx = -go->vx;
+	}
+	if ((globalOrientation == ORIENTATION_DOWN && go->py < 8) )
+	{
+		go->py = 8;
+		go->vy = -go->vy;
+	}
+
+	if (globalOrientation == ORIENTATION_UP && go->py > ScreenHeight)
+	{
+		go->py = ScreenHeight;
+		go->vy = -go->vy;
+
+	}
+	if ((globalOrientation == ORIENTATION_DOWN && go->py > ScreenHeight - 8) || (globalOrientation == ORIENTATION_UP && go->py < 16))
+	{
+		return SIM_END;
+	}
+
+	for (loopc = 0; loopc < numObjects; loopc++)
+	{
+		struct GameObject *target;
+		target = &gameObjects[loopc];
+		if (loopc != id)
+		{
+			if (IsBitSet(target->comp0, Component0_CircleCollider) && IsBitSet(target->comp0, Component0_CollideAble))
+			{
+				if (checkAabbCollision(&(go->boundingBox), &(target->boundingBox)))
+				{
+					hasSimHit = true;
+					if (proxy31_doCirclesOverlap(go->px, go->py, go->radius, target->px, target->py, target->radius))
+					{
+						if (IsBitSet(target->comp3, Component3_PortalActive) 
+						|| IsBitSet(target->comp2, Component2_Kill))
+						{
+							return SIM_END;
+						}
+
+						// Collision has occured
+						proxy32_addCollidingPairs(id, loopc, 0xff);
+
+						if (IsBitSet(target->comp1, Component1_Catch) && loopc != mainCannon)
+						{
+							return SIM_END;
+						}
+						// Distance between ball centers
+						float fDistance = qsqrt_3((go->px - target->px) * (go->px - target->px) + (go->py - target->py) * (go->py - target->py));
+
+						// Displace Current Ball away from collision
+
+						// Calculate displacement required
+						float fOverlap = 0.5 * (fDistance - (float)go->radius - (float)target->radius);
+						go->px -= fOverlap * (go->px - target->px) / fDistance;
+						go->py -= fOverlap * (go->py - target->py) / fDistance;
+					}
+				}
+			}
+
+			if (IsBitSet(target->comp0, Component0_CapsuleCollider) && IsBitSet(target->comp0, Component0_CollideAble))
+			{
+				if (checkAabbCollision(&(go->boundingBox), &(target->boundingBox)))
+				{
+					hasSimHit = true;
+
+					// Check that line formed by velocity vector, intersects with line segment
+					float fLineX1 = target->ax - target->px;
+					float fLineY1 = target->ay - target->py;
+
+					float fLineX2 = go->px - target->px;
+					float fLineY2 = go->py - target->py;
+
+					float fEdgeLength = fLineX1 * fLineX1 + fLineY1 * fLineY1;
+
+					// This is nifty - It uses the DP of the line segment vs the line to the object, to work out
+					// how much of the segment is in the "shadow" of the object vector. The min and max clamp
+					// this to lie between 0 and the line segment length, which is then normalised. We can
+					// use this to calculate the closest point on the line segment
+					float t = max_1(0.0, min_1(fEdgeLength, (fLineX1 * fLineX2 + fLineY1 * fLineY2))) / fEdgeLength;
+
+					// Which we do here
+					float fClosestPointX = target->px + t * fLineX1;
+					float fClosestPointY = target->py + t * fLineY1;
+
+					// And once we know the closest point, we can check if the ball has collided with the segment in the
+					// same way we check if two balls have collided
+					float dx = go->px - fClosestPointX;
+					float dy = go->py - fClosestPointY;
+					float fDistanceSq = dx * dx + dy * dy;
+
+					// Compare squared distance with squared sum of radii
+					float radiusSum = go->radius + target->radius;
+					if (fDistanceSq <= radiusSum * radiusSum) 
+					{
+						if (IsBitSet(target->comp2, Component2_Kill))
+						{
+							return SIM_END;
+						}
+
+						float fDistance = qsqrt_3(fDistanceSq);
+						// Collision has occurred - treat collision point as a ball that cannot move. To make this
+						// compatible with the dynamic resolution code below, we add a fake ball with an infinite mass
+						// so it behaves like a solid object when the momentum calculations are performed
+						proxy32_addFakeBalls(fClosestPointX, fClosestPointY, -go->vx, -go->vy, target->radius, target->efficiency);
+
+						// Add collision to vector of collisions for dynamic resolution
+						proxy32_addCollidingPairs(id, 0xff, numFakes - 1);
+
+						// Calculate displacement required
+						float fOverlap = 1.0 * (fDistance - go->radius - target->radius);
+
+						// Displace Current Ball away from collision
+						go->px -= fOverlap * (go->px - fClosestPointX) / fDistance;
+						go->py -= fOverlap * (go->py - fClosestPointY) / fDistance;
+					}
+				}
+			}
+		}
+	}
+	return SIM_RUN;
+}
+
 float qsqrt_3(float number)
 {
   long i;
@@ -4969,7 +5396,7 @@ void setGameObjectBall_3(byte id, float px, float py, float vx, float vy, float 
 	gameObjects[id].vx = vx;
 	gameObjects[id].vy = vy;
 	gameObjects[id].radius = radius;
-	gameObjects[id].efficiency = 1.1;
+	gameObjects[id].efficiency = 0.6;
 	gameObjects[id].color = color;
 	gameObjects[id].isOn = isOn;
 	gameObjects[id].pattern = 64;
@@ -5083,7 +5510,7 @@ void setGameObjectTimedValuableCircle_3(byte id, float px, float py, float r, bo
 	gameObjects[id].vx = 0;
 	gameObjects[id].vy = 0;
 	gameObjects[id].radius = r;
-	gameObjects[id].efficiency = 1.1;
+	gameObjects[id].efficiency = 0.6;
 	gameObjects[id].color = GCOL_ORANGE;
 	gameObjects[id].pattern = PAT_RAUTE;
 	gameObjects[id].baseScore = 100;
@@ -5109,7 +5536,7 @@ void setGameObjectTimedCircle_3(byte id, float px, float py, float r, bool isCol
 	gameObjects[id].vx = 0;
 	gameObjects[id].vy = 0;
 	gameObjects[id].radius = r;
-	gameObjects[id].efficiency = 1.1;
+	gameObjects[id].efficiency = 0.6;
 	gameObjects[id].color = GCOL_BLUE;
 	gameObjects[id].pattern = PAT_CHESS;
 	gameObjects[id].baseScore = 10;
@@ -5136,7 +5563,7 @@ void setGameObjectBombWallCircle_3(byte id, float px, float py, float r, bool is
 	gameObjects[id].vx = 0;
 	gameObjects[id].vy = 0;
 	gameObjects[id].radius = r;
-	gameObjects[id].efficiency = 1.1;
+	gameObjects[id].efficiency = 0.6;
 	gameObjects[id].color = GCOL_BROWN;
 	gameObjects[id].pattern = PAT_BOMBWALL;
 	gameObjects[id].baseScore = 20;
@@ -5162,7 +5589,7 @@ void setGameObjectTimedBonusScoreCircle_3(byte id, float px, float py, float r, 
 	gameObjects[id].vx = 0;
 	gameObjects[id].vy = 0;
 	gameObjects[id].radius = r;
-	gameObjects[id].efficiency = 1.1;
+	gameObjects[id].efficiency = 0.6;
 	gameObjects[id].color = GCOL_GREEN;
 	gameObjects[id].pattern = PAT_BONUS;
 	gameObjects[id].baseScore = 500;
@@ -5226,7 +5653,7 @@ void setGameObjectKillCircle_3(byte id, float px, float py, float r, byte color)
 	gameObjects[id].vx = 0;
 	gameObjects[id].vy = 0;
 	gameObjects[id].radius = r;
-	gameObjects[id].efficiency = 1.1;
+	gameObjects[id].efficiency = 0.6;
 	gameObjects[id].color = color;
 	gameObjects[id].pattern = PAT_DANGER;
 
@@ -5248,7 +5675,7 @@ void setGameObjectValuableCrackCircle_3(byte id, float px, float py, float r)
 	gameObjects[id].vx = 0;
 	gameObjects[id].vy = 0;
 	gameObjects[id].radius = r;
-	gameObjects[id].efficiency = 1.1;
+	gameObjects[id].efficiency = 0.6;
 	gameObjects[id].color = GCOL_ORANGE;
 	gameObjects[id].crackLevel = 3;
 	gameObjects[id].baseScore = 100;
@@ -5321,7 +5748,7 @@ void setGameObjectCircleOrientation_3(byte id, float px, float py, float r, byte
 	gameObjects[id].vx = 0;
 	gameObjects[id].vy = 0;
 	gameObjects[id].radius = r;
-	gameObjects[id].efficiency = 1.1;
+	gameObjects[id].efficiency = 0.6;
 	gameObjects[id].color = color;
 	gameObjects[id].orientation = orientation;
 	gameObjects[id].crackLevel = 3;
@@ -5371,7 +5798,7 @@ void setGameObjectCannon_3(byte id, float px, float py, float r, byte orientatio
 		gameObjects[id].orientation = globalOrientation;
 	}
 	gameObjects[id].radius = r;
-	gameObjects[id].efficiency = 1.1;
+	gameObjects[id].efficiency = 0.6;
 	gameObjects[id].color = color;
 	boundingBox = getBoundingBoxCircle_3(px, gameObjects[id].py, r,(int)r*2);
 	gameObjects[id].boundingBox = boundingBox;
@@ -5422,7 +5849,7 @@ void setGameObjectValueableTimedEdge_3(byte id, float px, float py, float ax, fl
 	gameObjects[id].ax = ax;
 	gameObjects[id].ay = ay;
 	gameObjects[id].radius = radius;
-	gameObjects[id].efficiency = 1.5;
+	gameObjects[id].efficiency = 0.3;
 	gameObjects[id].color = GCOL_ORANGE;
 	gameObjects[id].baseScore = 100;
 	gameObjects[id].boundingBox = getBoundingBoxLine_3(px, py, ax, ay, radius);
@@ -5448,7 +5875,7 @@ void setGameObjectBombWallEdge_3(byte id, float px, float py, float ax, float ay
 	gameObjects[id].ax = ax;
 	gameObjects[id].ay = ay;
 	gameObjects[id].radius = radius;
-	gameObjects[id].efficiency = 1.1;
+	gameObjects[id].efficiency = 0.3;
 	gameObjects[id].color = GCOL_BROWN;
 	gameObjects[id].baseScore = 20;
 	gameObjects[id].boundingBox = getBoundingBoxLine_3(px, py, ax, ay, radius);
@@ -5474,9 +5901,9 @@ void setGameObjectBonusScoreTimedEdge_3(byte id, float px, float py, float ax, f
 	gameObjects[id].ax = ax;
 	gameObjects[id].ay = ay;
 	gameObjects[id].radius = radius;
-	gameObjects[id].efficiency = 1.1;
+	gameObjects[id].efficiency = 0.3;
 	gameObjects[id].color = GCOL_PURPLE;
-	gameObjects[id].baseScore = 5000;
+	gameObjects[id].baseScore = 2000;
 	gameObjects[id].boundingBox = getBoundingBoxLine_3(px, py, ax, ay, radius);
 	gameObjects[id].pattern = PAT_BONUS;
 }
@@ -5500,7 +5927,7 @@ void setGameObjectTimedEdge_3(byte id, float px, float py, float ax, float ay, f
 	gameObjects[id].ax = ax;
 	gameObjects[id].ay = ay;
 	gameObjects[id].radius = radius;
-	gameObjects[id].efficiency = 1.1;
+	gameObjects[id].efficiency = 0.3;
 	gameObjects[id].color = GCOL_BLUE;
 	gameObjects[id].baseScore = 10;
 	gameObjects[id].boundingBox = getBoundingBoxLine_3(px, py, ax, ay, radius);
@@ -5526,7 +5953,7 @@ void setGameObjectLaser_3(byte id, float px, float py, float ax, float ay, byte 
 	gameObjects[id].ax = ax;	
 	gameObjects[id].ay = ay;
 	gameObjects[id].radius = 3;
-	gameObjects[id].efficiency = 1.1;
+	gameObjects[id].efficiency = 0.6;
 	gameObjects[id].color = color;
 	gameObjects[id].boundingBox = getBoundingBoxLine_3(px, py, ax, ay, 4);
 	gameObjects[id].pattern = PAT_SOLID;
@@ -5598,7 +6025,7 @@ void setGameObjectValueableCrackEdge_3(byte id, float px, float py, float ax, fl
 	gameObjects[id].ax = ax;
 	gameObjects[id].ay = ay;
 	gameObjects[id].radius = radius;
-	gameObjects[id].efficiency = 1.1;
+	gameObjects[id].efficiency = 0.3;
 	gameObjects[id].color = GCOL_ORANGE;
 	gameObjects[id].crackLevel = 3;
 	gameObjects[id].baseScore = 100;
@@ -5623,7 +6050,7 @@ void setGameObjectPortal_3(byte id, float px, float py, float r, bool isCollidea
 	gameObjects[id].vx = 0;
 	gameObjects[id].vy = 0;
 	gameObjects[id].radius = r;
-	gameObjects[id].efficiency = 2;
+	gameObjects[id].efficiency = 0.8;
 	gameObjects[id].color = GCOL_WHITE;
 	gameObjects[id].crackLevel = 2;
 	gameObjects[id].baseScore = 20;
@@ -5769,6 +6196,9 @@ void initScene_4(void)
 	case 12:
 		proxy45_initScene12();
 		break;
+	case 13:
+		proxy45_initScene13();
+		break;
 	default:
 		break;
 	}
@@ -5846,7 +6276,7 @@ void initScene0_4()
 
 	proxy3_setGameObjectImage(numObjects++, IMG_LANDSCAPE1, 0, 22, 40, 3, true, GCOL_DARK_GREY, true);
 	proxy3_setGameObjectImage(numObjects++, IMG_ALIEN1, 16, 5, 8, 8, true, GCOL_MED_GREY, false);
-	// proxy3_setGameObjectWallEdge(numObjects++, 130, 180, 180, 180, 4, 0.2, GCOL_RED, true);
+	proxy3_setGameObjectWallEdge(numObjects++, 130, 180, 180, 180, 4, 0.2, GCOL_RED, true);
 	// proxy3_setGameObjectValueableTimedEdge(numObjects++, 180, 150, 180, 170, 4, true);
 	// proxy3_setGameObjectValueableTimedEdge(numObjects++, 200, 150, 200, 170, 4, true);
 	// proxy3_setGameObjectValueableTimedEdge(numObjects++, 220, 150, 220, 170, 4, true);
@@ -5896,7 +6326,7 @@ void initScene0_4()
 			proxy3_setGameObjectTimedCircle(numObjects++, x1, y1, 6, true);
 		}
 	}
-	proxy3_setGameObjectBombCircle(numObjects++, 80,130,10,1.1, GCOL_LT_RED);
+	proxy3_setGameObjectBombCircle(numObjects++, 80,130,10, 0.8, GCOL_LT_RED);
 	byte end1 = numObjects - 1;
 	byte start2 = numObjects;
 
@@ -5915,7 +6345,7 @@ void initScene0_4()
 			proxy3_setGameObjectTimedCircle(numObjects++, x2, y2, 6, true);
 		}
 	}
-	proxy3_setGameObjectBombCircle(numObjects++, 240,130,10,1.1, GCOL_LT_RED);
+	proxy3_setGameObjectBombCircle(numObjects++, 240,130,10, 0.8, GCOL_LT_RED);
 
 	byte end2 = numObjects - 1;
 
@@ -5954,7 +6384,7 @@ void initScene1_4()
         }
         else
         {
-            proxy3_setGameObjectWallEdge(numObjects++, x, y, xa, ya, 4, 1.2, GCOL_RED, true);
+            proxy3_setGameObjectWallEdge(numObjects++, x, y, xa, ya, 4, 0.3, GCOL_RED, true);
         }
         xa = x;
         ya = y;
@@ -5968,11 +6398,11 @@ void initScene1_4()
     proxy3_setGameObjectLaser(numObjects++, 25, 125, 100, 125, GCOL_YELLOW, true);
     proxy3_setGameObjectLaser(numObjects++, 155, 125, 230, 125, GCOL_YELLOW, true);
     byte t1 = numObjects;
-    proxy3_setGameObjectCrackCircle(numObjects++, 128, 114, 8, 1.8, GCOL_ORANGE, 2, true);
-    proxy3_setGameObjectCrackCircle(numObjects++, 253, 114, 8, 1.8, GCOL_ORANGE, 3, true);
-    proxy3_setGameObjectCrackCircle(numObjects++, 63, 86, 8, 1.8, GCOL_ORANGE, 3, true);
+    proxy3_setGameObjectCrackCircle(numObjects++, 128, 114, 8, 0.4, GCOL_ORANGE, 2, true);
+    proxy3_setGameObjectCrackCircle(numObjects++, 253, 114, 8, 0.4, GCOL_ORANGE, 3, true);
+    proxy3_setGameObjectCrackCircle(numObjects++, 63, 86, 8, 0.4, GCOL_ORANGE, 3, true);
     byte t2 = numObjects;
-    proxy3_setGameObjectCrackCircle(numObjects++, 193, 86, 8, 1.8, GCOL_ORANGE, 2, true);
+    proxy3_setGameObjectCrackCircle(numObjects++, 193, 86, 8, 0.4, GCOL_ORANGE, 2, true);
 
     proxy3_setGameObjectCircleOrientation(numObjects++, 22, 60, 9, ORIENTATION_UP, GCOL_GREEN, PAT_ARROW_UP, 0);
     proxy3_setGameObjectCircleOrientation(numObjects++, 298, 140, 9, ORIENTATION_DOWN, GCOL_GREEN, PAT_ARROW_DOWN, 0);
@@ -6087,7 +6517,7 @@ void initScene3_4()
 
             if (i != o && i != 11)
             {
-                proxy3_setGameObjectWallEdge(numObjects++, x, y, xa, ya, 4, 2.1, GCOL_RED, true);
+                proxy3_setGameObjectWallEdge(numObjects++, x, y, xa, ya, 4, 0.3, GCOL_RED, true);
             }
 
             xa = x;
@@ -6112,11 +6542,11 @@ void initScene3_4()
     }
 
     byte trigger1 = numObjects;
-    proxy3_setGameObjectBumpCircle(numObjects++, 70 + 4, 80 + 4, 12, 1.5, GCOL_MED_GREY);
+    proxy3_setGameObjectBumpCircle(numObjects++, 70 + 4, 80 + 4, 12, 0.8, GCOL_MED_GREY);
     byte trigger2 = numObjects;
-    proxy3_setGameObjectBumpCircle(numObjects++, 250 + 4, 80 + 4, 12, 1.5, GCOL_MED_GREY);
+    proxy3_setGameObjectBumpCircle(numObjects++, 250 + 4, 80 + 4, 12, 0.8, GCOL_MED_GREY);
     byte trigger3 = numObjects;
-    proxy3_setGameObjectBumpCircle(numObjects++, 160 + 4, 140 + 4, 12, 1.5, GCOL_MED_GREY);
+    proxy3_setGameObjectBumpCircle(numObjects++, 160 + 4, 140 + 4, 12, 0.8, GCOL_MED_GREY);
 
     byte startg1 = numObjects;
     proxy3_setGameObjectPortal(numObjects++, 92, 40, 8, false);    
@@ -6171,7 +6601,7 @@ void initScene4_4()
     }    
 
     byte sourceId = numObjects;
-    proxy3_setGameObjectActivateBallCircle(numObjects++, 160, 108, 7, 1.1, GCOL_WHITE);
+    proxy3_setGameObjectActivateBallCircle(numObjects++, 160, 108, 7, 0.6, GCOL_WHITE);
 
     proxy3_addDepObject(sourceId, targetId);
 
@@ -6275,7 +6705,7 @@ void initScene6_4()
             byte i = (col * 4) + row;
 
             arraySwitches[i] = numObjects;
-            proxy3_setGameObjectSwitchCircle(numObjects++, x, y, 9, 1.0, GCOL_YELLOW, false);
+            proxy3_setGameObjectSwitchCircle(numObjects++, x, y, 9, 0.8, GCOL_YELLOW, false);
             if (col < 2 && row < 2)
             {
                 proxy3_setGameObjectTimedValuableCircle(numObjects++, x + 40, y + 25, 5, true);
@@ -6336,7 +6766,7 @@ void initScene7_4()
 
         y = (cos(((x - 160) * 0.011) * (x - 160) * 0.011) + 1.5) * 60;
 
-        proxy3_setGameObjectWallEdge(numObjects++, x, y, xa, ya, 4, 1, GCOL_RED, true);
+        proxy3_setGameObjectWallEdge(numObjects++, x, y, xa, ya, 4, 0.3, GCOL_RED, true);
 
         xa = x;
         ya = y;
@@ -6355,7 +6785,7 @@ void initScene7_4()
 
         y = (cos(((x - 160) * 0.011) * (x - 160) * 0.011) + 1.5) * 60;
 
-        proxy3_setGameObjectWallEdge(numObjects++, x, y, xa, ya, 4, 1.1, GCOL_RED, true);
+        proxy3_setGameObjectWallEdge(numObjects++, x, y, xa, ya, 4, 0.3, GCOL_RED, true);
 
         xa = x;
         ya = y;
@@ -6473,11 +6903,6 @@ void initScene8_4()
 		xa = x1;
 		ya = y1;
 
-		// if(i>2 && i< 16)
-		// {
-		// 	proxy3_setGameObjectCrackCircle(numObjects++, x7, y7, 12, 1.8, GCOL_ORANGE, 3, true);
-		// }
-
         step1 += 11.25 * PI / 180;
         step2 += 11.25 * PI / 180;
     }
@@ -6536,8 +6961,8 @@ void initScene9_4()
 		{
 			x1 = x;
 			y1 = y;
-			proxy3_setGameObjectWallEdge(numObjects++, x1, y1, x2, y2, 4, 1.1, GCOL_RED, true);
-			proxy3_setGameObjectWallEdge(numObjects++, 320 - x1 , y1, 320 - x2, y2, 4, 1.1, GCOL_RED, true);
+			proxy3_setGameObjectWallEdge(numObjects++, x1, y1, x2, y2, 4, 0.3, GCOL_RED, true);
+			proxy3_setGameObjectWallEdge(numObjects++, 320 - x1 , y1, 320 - x2, y2, 4, 0.3, GCOL_RED, true);
 		}
 		if(y == 136)
 		{
@@ -6548,14 +6973,14 @@ void initScene9_4()
 		{
 			x1 = x;
 			y1 = y;
-			proxy3_setGameObjectWallEdge(numObjects++, x1, y1, x2, y2, 4, 1.1, GCOL_RED, true);
-			proxy3_setGameObjectWallEdge(numObjects++, 320 - x1, y1, 320 - x2, y2, 4, 1.1, GCOL_RED, true);
+			proxy3_setGameObjectWallEdge(numObjects++, x1, y1, x2, y2, 4, 0.3, GCOL_RED, true);
+			proxy3_setGameObjectWallEdge(numObjects++, 320 - x1, y1, 320 - x2, y2, 4, 0.3, GCOL_RED, true);
 		}
 
 		if(y != 72)
 		{
-			proxy3_setGameObjectWallEdge(numObjects++, x, y, xa, ya, 4, 1.1, GCOL_RED, true);
-			proxy3_setGameObjectWallEdge(numObjects++, 320 - x, y, 320 - xa, ya, 4, 1.1, GCOL_RED, true);
+			proxy3_setGameObjectWallEdge(numObjects++, x, y, xa, ya, 4, 0.3, GCOL_RED, true);
+			proxy3_setGameObjectWallEdge(numObjects++, 320 - x, y, 320 - xa, ya, 4, 0.3, GCOL_RED, true);
 			if(y != 152 && y != 152  - 16)
 			{
 				proxy3_setGameObjectValuableCrackCircle(numObjects++, x + 11, y, 4);		
@@ -6564,8 +6989,8 @@ void initScene9_4()
 		}
 		if( y != 152)
 		{
-			proxy3_setGameObjectWallEdge(numObjects++, 160 - x, y, 160 - xa, ya, 4, 1.1, GCOL_RED, true);
-			proxy3_setGameObjectWallEdge(numObjects++, 320 - (160 - x), y, 320 - (160 - xa), ya, 4, 1.1, GCOL_RED, true);
+			proxy3_setGameObjectWallEdge(numObjects++, 160 - x, y, 160 - xa, ya, 4, 0.3, GCOL_RED, true);
+			proxy3_setGameObjectWallEdge(numObjects++, 320 - (160 - x), y, 320 - (160 - xa), ya, 4, 0.3, GCOL_RED, true);
 			if(y != 72 && y != 152 - 16)
 			{
 				proxy3_setGameObjectValuableCrackCircle(numObjects++, (160 - x)  - 11, y, 4);
@@ -6577,7 +7002,7 @@ void initScene9_4()
 	}
 
     byte sourceId = numObjects;
-    proxy3_setGameObjectActivateBallCircle(numObjects++, 80, 100, 7, 1.1, GCOL_WHITE);
+    proxy3_setGameObjectActivateBallCircle(numObjects++, 80, 100, 7, 0.6, GCOL_WHITE);
     proxy3_addDepObject(sourceId, targetId);
 
 	proxy3_setGameObjectTimedValuableCircle(numObjects++, 160, 90, 6, true);
@@ -6586,7 +7011,7 @@ void initScene9_4()
 
 	proxy3_setGameObjectPortal(numObjects++, 55, 137, 8, true);
 	proxy3_setGameObjectPortal(numObjects++, 223, 73, 8, true);
-	proxy3_setGameObjectBumpCircle(numObjects++, 320-55, 137, 8, 4, GCOL_LT_BLUE);
+	proxy3_setGameObjectBumpCircle(numObjects++, 320-80, 100, 8, 0.8, GCOL_LT_BLUE);
 
 
     proxy3_setGameObjectCircleOrientation(numObjects++, 35, 100, 8, ORIENTATION_DOWN, GCOL_RED, PAT_ARROW_DOWN, 0);
@@ -6625,24 +7050,18 @@ void initScene10_5()
     proxy3_setGameObjectLaser(numObjects++, 320-80, 130, 320-90, 190, GCOL_YELLOW, true);
 
 	byte t1 = numObjects;
-	proxy3_setGameObjectSwitchCircle(numObjects++, 45, 150, 12, 1.0, GCOL_YELLOW, true);
+	proxy3_setGameObjectSwitchCircle(numObjects++, 45, 150, 12, 0.8, GCOL_YELLOW, true);
 	byte t2 = numObjects;
-	proxy3_setGameObjectSwitchCircle(numObjects++, 320-45, 150, 12, 1.0, GCOL_YELLOW, true);
+	proxy3_setGameObjectSwitchCircle(numObjects++, 320-45, 150, 12, 0.8, GCOL_YELLOW, true);
 	byte t3 = numObjects;
-	proxy3_setGameObjectSwitchCircle(numObjects++, 24, 87, 9, 1.0, GCOL_YELLOW, true);
+	proxy3_setGameObjectSwitchCircle(numObjects++, 24, 87, 9, 0.8, GCOL_YELLOW, true);
 	byte t4 = numObjects;
-	proxy3_setGameObjectSwitchCircle(numObjects++, 320-24, 87, 9, 1.0, GCOL_YELLOW, true);
+	proxy3_setGameObjectSwitchCircle(numObjects++, 320-24, 87, 9, 0.8, GCOL_YELLOW, true);
 
 	byte b1 = numObjects;
-	proxy3_setGameObjectBombCircle(numObjects++, 114, 100, 8, 1.2, GCOL_RED);
+	proxy3_setGameObjectBombCircle(numObjects++, 114, 100, 8, 0.8, GCOL_RED);
 	byte b2 = numObjects;
-	proxy3_setGameObjectBombCircle(numObjects++, 320-114, 100, 8, 1.2, GCOL_RED);
-
-	// proxy3_setGameObjectBombWallCircle(numObjects++, 10, 100, 8, true);
-	// proxy3_setGameObjectBombCircle(numObjects++, 30, 100, 8, 1.2, GCOL_RED);
-	// proxy3_setGameObjectBombCircle(numObjects++, 60, 100, 8, 1.2, GCOL_RED);
-	// proxy3_setGameObjectBombCircle(numObjects++, 60, 160, 8, 1.2, GCOL_RED);
-	// proxy3_setGameObjectBombCircle(numObjects++, 80, 160, 8, 1.2, GCOL_RED);
+	proxy3_setGameObjectBombCircle(numObjects++, 320-114, 100, 8, 0.8, GCOL_RED);
 
     int xz = 0, yz = 0;
 
@@ -6668,7 +7087,7 @@ void initScene10_5()
 
         float xa = 30 * sin(step) + xz;
         float ya = 20 * cos(step) + yz;
-		proxy3_setGameObjectBombCircle(numObjects++, xz, yz, 8, 1.2, GCOL_RED);
+		proxy3_setGameObjectBombCircle(numObjects++, xz, yz, 8, 0.8, GCOL_RED);
         for (byte i = 0; i < 8; i++)
         {
             step += 45 * PI / 180;
@@ -6682,7 +7101,7 @@ void initScene10_5()
 
             if (i != 3 && i != 7)
             {
-                proxy3_setGameObjectWallEdge(numObjects++, x, y, xa, ya, 2, 2.1, GCOL_RED, true);
+                proxy3_setGameObjectWallEdge(numObjects++, x, y, xa, ya, 2, 0.3, GCOL_RED, true);
             }
 			if(i == 7)
 			{
@@ -6850,7 +7269,7 @@ void initScene12_5()
 				}
 				else if(i % 3 == 0)
 				{
-					proxy3_setGameObjectBombCircle(numObjects++, x,y,7,1.1, GCOL_LT_RED);
+					proxy3_setGameObjectBombCircle(numObjects++, x,y,7,0.8, GCOL_LT_RED);
 				}
 				else
 				{
@@ -6862,7 +7281,7 @@ void initScene12_5()
 		}
 
 		byte p3 = numObjects;
-		proxy3_setGameObjectSwitchCircle(numObjects++, 90, 100, 12, 1.5, GCOL_YELLOW, false);
+		proxy3_setGameObjectSwitchCircle(numObjects++, 90, 100, 12, 0.8, GCOL_YELLOW, false);
 	
 	    proxy3_addActor(EventSwitchOn, 0xff, p3, ActionEnableCollision, p1, p1, 0xff, 0xff, 0xff);
 	    proxy3_addActor(EventSwitchOn, 0xff, p3, ActionDisableCollision, p2, p2, 0xff, 0xff, 0xff);
@@ -6873,6 +7292,92 @@ void initScene12_5()
 	// 254/146
 	// 93/748
 	// 241/304
+
+    // Adding large text to announce level start
+    largeTextId = numObjects;
+    largeTextTimer = LARGE_TEXT_TIMER;
+
+    proxy3_setGameObjectLargeText(numObjects++, 8, true, 0x7f, 0, GCOL_WHITE);
+
+}
+
+void initScene13_5()
+{
+    registerCallBank(5);
+    balls = 12; // Number of balls for this level
+    // Cannon setup
+    proxy3_setGameObjectBall(numObjects++, 160, 22, 0, 0, 4, 0, true, true, VCOL_WHITE);
+    proxy3_setGameObjectCannon(numObjects++, 160, 18, 18, ORIENTATION_DOWN, GCOL_DARK_GREY, true, true);
+    proxy3_setGameObjectImage(numObjects++, IMG_LANDSCAPE1, 0, 22, 40, 3, true, GCOL_DARK_GREY, true);
+
+    float x1e = 0, y1e = 25, x2e = 320, y2e = 60;
+
+    for(byte i = 0; i < 9; i++)
+    {
+        float xa1e = x1e + 19;
+        float ya1e = y1e + 8 + i * 0.6;
+        float xa2e = x2e - 19;
+        float ya2e = y2e + 8 + i * 0.6;
+
+        if((i + 3) % 4 == 0)
+        {
+            proxy3_setGameObjectValueableTimedEdge(numObjects++, x1e, y1e, xa1e, ya1e, 4, true);
+            proxy3_setGameObjectValueableTimedEdge(numObjects++, x2e, y2e, xa2e, ya2e, 4, true);
+        }
+        else
+        {
+                proxy3_setGameObjectWallEdge(numObjects++, x1e, y1e, xa1e, ya1e, 4, 0.3, GCOL_RED, true);
+                proxy3_setGameObjectWallEdge(numObjects++, x2e, y2e, xa2e, ya2e, 4, 0.3, GCOL_RED, true);
+            // proxy3_setGameObjectTimedEdge(numObjects++, x1e, y1e, xa1e, ya1e, 4, true);
+            // proxy3_setGameObjectTimedEdge(numObjects++, x2e, y2e, xa2e, ya2e, 4, true);
+        }
+
+        x1e = xa1e;
+        y1e = ya1e;
+        x2e = xa2e;
+        y2e = ya2e;
+    }
+
+    x1e = 0; 
+	y1e = 65; 
+	x2e = 320; 
+	y2e = 20;
+
+    for(byte i = 0; i < 6; i++)
+    {
+        float xa1e = x1e + 19;
+        float ya1e = y1e + 8 + i * 0.9;
+        float xa2e = x2e - 19;
+        float ya2e = y2e + 8 + i * 0.9;
+
+        if((i + 3) % 4 == 0)
+        {
+            proxy3_setGameObjectValueableTimedEdge(numObjects++, x1e, y1e, xa1e, ya1e, 4, true);
+            proxy3_setGameObjectValueableTimedEdge(numObjects++, x2e, y2e, xa2e, ya2e, 4, true);
+        }
+        else
+        {
+                proxy3_setGameObjectWallEdge(numObjects++, x1e, y1e, xa1e, ya1e, 4, 0.3, GCOL_RED, true);
+                proxy3_setGameObjectWallEdge(numObjects++, x2e, y2e, xa2e, ya2e, 4, 0.3, GCOL_RED, true);
+
+            // proxy3_setGameObjectTimedEdge(numObjects++, x1e, y1e, xa1e, ya1e, 4, true);
+            // proxy3_setGameObjectTimedEdge(numObjects++, x2e, y2e, xa2e, ya2e, 4, true);
+        }
+
+        x1e = xa1e;
+        y1e = ya1e;
+        x2e = xa2e;
+        y2e = ya2e;
+    }
+	//186/87
+	//162/110
+	//112/132
+	//133/149
+
+    proxy3_setGameObjectLaser(numObjects++, 196, 87, 172, 110, GCOL_YELLOW, true);
+    proxy3_setGameObjectLaser(numObjects++, 118, 132, 142, 155, GCOL_YELLOW, true);
+    proxy3_setGameObjectCircleOrientation(numObjects++, 132, 132, 8, ORIENTATION_UP, GCOL_RED, PAT_ARROW_UP, 0);
+
 
     // Adding large text to announce level start
     largeTextId = numObjects;
@@ -7002,7 +7507,7 @@ int main(void)
 	initStarPolygon_2();
 	eflash.bank = 1;
 	highlight.timer = 0;
-	level = 12;
+	level = 13;
 	breakMusic = false;
 
 	state = GS_TITLE_INIT;
