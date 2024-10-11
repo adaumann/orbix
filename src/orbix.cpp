@@ -18,7 +18,7 @@
 #include "orbix.h"
 
 #pragma region( zeropage, 0x80, 0xfa, , , {zeropage})
-#pragma region(main, 0x0900, 0x8000, , , { code, data, bss, heap, stack } )
+#pragma region(main, 0x08e7, 0x8000, , , { code, data, bss, heap, stack } )
 
 #pragma section(bcode1, 0)
 #pragma section(bdata1, 0)
@@ -441,58 +441,58 @@ ScoreBoard scoreBoard[7] =
 const byte lumFromBlack[32] = { 0x00,0x06,0x09,0x0b,0x02,0x04,0x08,0x0c,0x0e,0x0a,0x05,0x0f,0x03,0x07,0x0d,0x01,0x0d,0x07,0x03,0x0f,0x05,0x0a,0x0e,0x0c,0x08,0x04,0x02,0x0b,0x09,0x06,0x00,0x00 };
 const byte blues8[8] = { 0x10,0xf0,0xc0, 0xb0, 0xb0, 0xc0,0xf0,0x10 };
 
-char texts[6][20] = {"LEVEL START", "BALL LOST", "BALL SAVED", "ALL CLEAR", "LEVEL FINISHED", "GAME OVER"};
+char texts[6][12] = {"LEVEL START", "BALL LOST", "BALL SAVED", "ALL CLEAR", "LEVEL DONE", "GAME OVER"};
 
 char bonusTxt[5] = {'B','O','N','U','S'};
 
 const char scoreTxt[41] = s"00000000           X1          BALLS: --\0";
 byte callBank;
-sbyte globalOrientation = 1;
-byte posYTray = 0, tray = 0;
+sbyte globalOrientation;
+byte posYTray, tray;
 byte timer;
 byte loopc;
 byte loopo;
-int posXTray = 0;
-byte numObjects = 0;
-byte numDepObjects = 0;
-byte numActors = 0;
-byte totalValueableObjects = 0;
-byte startValueableObjects = 0;
-byte valueableObjects = 0;
-byte numColPairs = 0;
-byte numFakes = 0;
+int posXTray;
+byte numObjects;
+byte numDepObjects;
+byte numActors;
+byte totalValueableObjects;
+byte startValueableObjects;
+byte valueableObjects;
+byte numColPairs;
+byte numFakes;
 float timeElapsing;
 int remainTimer;
 GameState state;
-byte currentCannon = 0xff, mainCannon = 0xff;
+byte currentCannon, mainCannon;
 float currentAngleStep = 0;
-byte mainBall = 0xff;
+byte mainBall;
 byte collideQueue[MaxObjects];
-sbyte collideQueueFront = 0, collideQueueRear = 0;
+sbyte collideQueueFront, collideQueueRear;
 ScoreDisplay scoreQueue[MaxScoreDisplay];
-sbyte scoreQueueFront = 0, scoreQueueRear = 0;
+sbyte scoreQueueFront, scoreQueueRear;
 BombDisplay bombQueue[MaxBombDisplay];
-sbyte bombQueueFront = 0, bombQueueRear = 0;
-byte bumptimer = 0;
-bool playTunes = false;
-byte stuckCnt = 0;
-unsigned long points = 0;
-byte multiplier = 1;
-byte spriteCount = 0;
+sbyte bombQueueFront, bombQueueRear;
+byte bumptimer;
+bool playTunes;
+byte stuckCnt;
+unsigned long points;
+byte multiplier;
+byte spriteCount;
 const char *sp;
-int largeTextTimer = 0;
-byte largeTextId = 0;
-bool breakMusic = false;
-byte balls = 0;
-byte level = 0;
-signed int orbzScore = 0;
-signed int roundScore = 0;
-signed int levelScore = 0;
+int largeTextTimer;
+byte largeTextId;
+bool breakMusic;
+byte balls;
+byte level;
+signed int orbzScore;
+signed int roundScore;
+signed int levelScore;
 byte voice;
 Highlight highlight;
 byte traySprite;
-bool extraBalls = true;
-bool completed = false;
+bool extraBalls;
+bool completed;
 byte faceState;
 signed char ballSide;
 byte faceTimer;
@@ -500,7 +500,7 @@ byte titlePhase;
 byte menuItem;
 // Storage for up to 64 particles
 Particle	particles[64];
-signed int cntMusic=0;
+signed int cntMusic;
 byte bombDistance;
 byte simEndCnt;
 bool hasSimHit, simDone;
@@ -6136,6 +6136,7 @@ void preInitScene_3()
 	cntMusic = 0;
 	timeElapsing = TimeElapsingNorm;
 	bombDistance = 60;
+	// proxy32_setGlobalOrientation(ORIENTATION_DOWN);
 
 	struct CollidingTimer *ct;
 
@@ -7047,16 +7048,17 @@ void initScene10_5()
 	registerCallBank(5);
     balls = 12;
 	byte ballId = numObjects;
+
     proxy3_setGameObjectBall(numObjects++, 160, 180, 0, 0, 4, 0, true, true, VCOL_WHITE);
     proxy3_setGameObjectCannon(numObjects++, 160, 180, 18, ORIENTATION_UP, GCOL_DARK_GREY, false, true);
 	proxy3_setGameObjectTimedValuableCircle(numObjects++, 160, 20, 6, true);
 
 	byte l1 = numObjects;
-    proxy3_setGameObjectLaser(numObjects++, 0, 120, 80, 130, GCOL_YELLOW, true);
+    proxy3_setGameObjectLaser(numObjects++, 0, 120, 80, 140, GCOL_YELLOW, true);
 	byte l2 = numObjects;
-    proxy3_setGameObjectLaser(numObjects++, 320, 120, 320-80, 130, GCOL_YELLOW, true);
-    proxy3_setGameObjectLaser(numObjects++, 80, 130, 90, 190, GCOL_YELLOW, true);
-    proxy3_setGameObjectLaser(numObjects++, 320-80, 130, 320-90, 190, GCOL_YELLOW, true);
+    proxy3_setGameObjectLaser(numObjects++, 320, 120, 320-80, 140, GCOL_YELLOW, true);
+    proxy3_setGameObjectLaser(numObjects++, 80, 140, 90, 190, GCOL_YELLOW, true);
+    proxy3_setGameObjectLaser(numObjects++, 320-80, 140, 320-90, 190, GCOL_YELLOW, true);
 
 	byte t1 = numObjects;
 	proxy3_setGameObjectSwitchCircle(numObjects++, 45, 150, 12, 0.8, GCOL_YELLOW, true);
@@ -7142,7 +7144,6 @@ void initScene10_5()
     // Adding large text
     largeTextId = numObjects;
     largeTextTimer = LARGE_TEXT_TIMER;
-
     proxy3_setGameObjectLargeText(numObjects++, 8, true, 0x7f, 0, GCOL_WHITE);
 }
 
@@ -7211,10 +7212,10 @@ void initScene12_5()
     proxy3_setGameObjectCannon(numObjects++, 160, 18, 18, ORIENTATION_DOWN, GCOL_DARK_GREY, true, true);
     proxy3_setGameObjectImage(numObjects++, IMG_LANDSCAPE1, 0, 22, 40, 3, true, GCOL_DARK_GREY, true);
 
-	proxy3_setGameObjectCannon(numObjects++, 200, 180, 12, ORIENTATION_RIGHT, GCOL_MED_GREY, false, false);
-	proxy3_setGameObjectCannon(numObjects++, 280, 180, 12, ORIENTATION_LEFT, GCOL_MED_GREY, false, false);
-	proxy3_setGameObjectCannon(numObjects++, 200, 20, 12, ORIENTATION_RIGHT, GCOL_MED_GREY, false, false);
-	proxy3_setGameObjectCannon(numObjects++, 280, 20, 12, ORIENTATION_LEFT, GCOL_MED_GREY, false, false);
+	proxy3_setGameObjectCannon(numObjects++, 200, 150, 12, ORIENTATION_RIGHT, GCOL_MED_GREY, false, false);
+	proxy3_setGameObjectCannon(numObjects++, 280, 150, 12, ORIENTATION_LEFT, GCOL_MED_GREY, false, false);
+	proxy3_setGameObjectCannon(numObjects++, 200, 50, 12, ORIENTATION_RIGHT, GCOL_MED_GREY, false, false);
+	proxy3_setGameObjectCannon(numObjects++, 280, 50, 12, ORIENTATION_LEFT, GCOL_MED_GREY, false, false);
 
 	const int size=12;
     float a = 13.0; // Amplitude8
@@ -7460,14 +7461,14 @@ int main(void)
 	// Disable CIA interrupts, we do not want interference
 	// with our joystick interrupt
 	cia_init();
-	timer = 0;
-	collideQueueFront = -1;
-	collideQueueRear = -1;
-	scoreQueueFront = -1;
-	scoreQueueRear = -1;
-	bombQueueFront = -1;
-	bombQueueRear = -1;
-	//globalOrientation = ORIENTATION_DOWN;
+	// timer = 0;
+	// collideQueueFront = -1;
+	// collideQueueRear = -1;
+	// scoreQueueFront = -1;
+	// scoreQueueRear = -1;
+	// bombQueueFront = -1;
+	// bombQueueRear = -1;
+	globalOrientation = ORIENTATION_DOWN;
 	traySprite = 5;
 	posYTray = 229;
 	//sid.fmodevol = 15;
