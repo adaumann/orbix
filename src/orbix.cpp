@@ -872,11 +872,18 @@ __noinline bool proxy12_setGlobalOrientation(sbyte orientation)
 }
 
 
-__noinline void proxy0_lchar_put(int cx, char cy, char c, char spray)
+__noinline void proxy13_lchar_put(int cx, char cy, char c, char spray)
 {
-	mmap_set(MMAP_RAM);
-	lchar_put(cx, cy, c, spray);
-	mmap_set(MMAP_ROM);
+	eflash.bank = 3;
+	lchar_put_3(cx, cy, c, spray);
+	eflash.bank = 1;
+}
+
+__noinline void proxy23_lchar_put(int cx, char cy, char c, char spray)
+{
+	eflash.bank = 3;
+	lchar_put_3(cx, cy, c, spray);
+	eflash.bank = 2;
 }
 
 __noinline void proxy12_executeLargeTextTimer()
@@ -1612,32 +1619,6 @@ void colorChar(unsigned char x, unsigned char y, byte backc, char* col, bool onl
 		else
 		{
 			col[40 * y + x] = backc;
-		}
-	}
-}
-
-// Expand an 8x8 character to 16x16 on screen
-void lchar_put(int cx, char cy, char c, byte spray)
-{
-	// Get pointer to glyph data
-	sp = Charset + 8 * c;
-	// Loop over all pixel
-	for (char y = 0; y < 8; y++)
-	{
-		char cl = sp[y];
-		for (char x = 0; x < 8; x++)
-		{
-			// Draw two pixel if bit is set
-			if (cl & 128)
-			{
-				bm_put(&Screen, cx + 2 * x + 0, cy + 2 * y + 0, true);
-				bm_put(&Screen, cx + 2 * x + 0, cy + 2 * y + spray, true);
-				bm_put(&Screen, cx + 2 * x + spray, cy + 2 * y + 0, true);
-				bm_put(&Screen, cx + 2 * x + spray, cy + 2 * y + spray, true);
-			}
-
-			// Next bit
-			cl <<= 1;
 		}
 	}
 }
@@ -2612,7 +2593,7 @@ void updateRender_1(byte id, bool init)
 			//proxy0_bm_circle_fill(&Screen, &scr, (int)go->px + 3, (int)go->py + 3, (int)go->radius, NineShadesOfGrey[2]);
 			proxy0_bm_circle_fill(&Screen, &scr, (int)go->px, (int)go->py, (int)go->radius, Patterns[PAT_SOLID]);
 			proxy0_bm_circle_fill(&Screen, &scr, (int)go->px , (int)go->py, (int)go->radius - 2, Patterns[PAT_BONUS_LINE]);
-			proxy0_lchar_put((int)go->px - 8, (int)go->py - 8, go->pattern, 1);
+			proxy13_lchar_put((int)go->px - 8, (int)go->py - 8, go->pattern, 1);
 		}
 		else
 		{
@@ -3528,7 +3509,7 @@ void printLargeString_2(char cy, const char *s, bool withRoundScore, bool withLe
 	// Loop over all characters
 	while (*s)
 	{
-		proxy0_lchar_put(cx, cy, *s, 2);
+		proxy23_lchar_put(cx, cy, *s, 2);
 		s++;
 		cx += 16;
 	}
@@ -5121,6 +5102,32 @@ void titleFadeOut_2()
 #pragma data(bdata3)
 
 // ---------------- BANK 3 Scene
+
+void lchar_put_3(int cx, char cy, char c, byte spray)
+{
+	// Get pointer to glyph data
+	sp = Charset + 8 * c;
+	// Loop over all pixel
+	for (char y = 0; y < 8; y++)
+	{
+		char cl = sp[y];
+		for (char x = 0; x < 8; x++)
+		{
+			// Draw two pixel if bit is set
+			if (cl & 128)
+			{
+				proxy0_bm_put(&Screen, cx + 2 * x + 0, cy + 2 * y + 0, true);
+				proxy0_bm_put(&Screen, cx + 2 * x + 0, cy + 2 * y + spray, true);
+				proxy0_bm_put(&Screen, cx + 2 * x + spray, cy + 2 * y + 0, true);
+				proxy0_bm_put(&Screen, cx + 2 * x + spray, cy + 2 * y + spray, true);
+			}
+
+			// Next bit
+			cl <<= 1;
+		}
+	}
+}
+
 
 void saveSimulationStart_3(byte id)
 {
