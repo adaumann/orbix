@@ -157,7 +157,7 @@ const sbyte sintab[128] = {
 
 #pragma data(sprites)
 
-const byte ballsprites[] = {
+__export const byte ballsprites[] = {
 #embed "../resources/balls.spr"
 };
 
@@ -426,7 +426,7 @@ struct Actor actorList[MaxActors];
 struct DepGameObject depObjects[MaxDepObjects];
 struct CollidingTimer collidingTimers[MaxColTimers];
 float	px[10], py[10];
-
+ 
 ScoreBoard scoreBoard[7] =
 	{
 		{1, 1, 0},
@@ -441,9 +441,11 @@ ScoreBoard scoreBoard[7] =
 const byte lumFromBlack[32] = { 0x00,0x06,0x09,0x0b,0x02,0x04,0x08,0x0c,0x0e,0x0a,0x05,0x0f,0x03,0x07,0x0d,0x01,0x0d,0x07,0x03,0x0f,0x05,0x0a,0x0e,0x0c,0x08,0x04,0x02,0x0b,0x09,0x06,0x00,0x00 };
 const byte blues8[8] = { 0x10,0xf0,0xc0, 0xb0, 0xb0, 0xc0,0xf0,0x10 };
 
-char texts[6][12] = {"LEVEL START", "BALL LOST", "BALL SAVED", "ALL CLEAR", "LEVEL DONE", "GAME OVER"};
+const char texts[6][12] = {"LEVEL START", "BALL LOST", "BALL SAVED", "ALL CLEAR", "LEVEL DONE", "GAME OVER"};
 
 char bonusTxt[5] = {'B','O','N','U','S'};
+
+char hiscore[8] = "00000000";
 
 byte callBank;
 sbyte globalOrientation;
@@ -515,7 +517,7 @@ static char * Hirows[25];
 
 // Pixel masks
 static const char setmask[8] = {0x80, 0x40, 0x20, 0x10, 0x08, 0x04, 0x02, 0x01};
-static const char clrmask[8] = {0x7f, 0xbf, 0xdf, 0xef, 0xf7, 0xfb, 0xfd, 0xfe};
+//static const char clrmask[8] = {0x7f, 0xbf, 0xdf, 0xef, 0xf7, 0xfb, 0xfd, 0xfe};
 
 __noinline void proxy32_particle_init()
 {
@@ -749,7 +751,6 @@ __noinline void proxy0_put_string(const Bitmap * bm, const ClipRect * clip, int 
 	bm_put_string(bm, clip, x, y, str, op);
 	mmap_set(MMAP_ROM);
 }
-
 
 __noinline void proxy12_score_reset(void)
 {
@@ -1967,10 +1968,10 @@ void frameLoop_1()
 	char backTxt[] = "Back";
 	char authorTxt[] = "code: andy daumann";
 	char author2Txt[] = "music: picrard";
-	char scoreTxt[] = "Score:";
-	char hiscoreTxt[] = "Hiscore:";
+	// char scoreTxt[] = "Score:";
+	// char hiscoreTxt[] = "Hiscore:";
 
-	char titleTxt[] = "ORBIX Preview 1";
+	char titleTxt[] = "ORBIX";
 
 	if(state == GS_TITLE_INIT)
 	{
@@ -2006,8 +2007,16 @@ void frameLoop_1()
 		}
 		if(timer == 255 && titlePhase == 1)
 		{
-			proxy0_put_string(&Screen, &scr, 118, 144, scoreTxt, BLTOP_COPY);
-			proxy0_put_string(&Screen, &scr, 118, 162, hiscoreTxt, BLTOP_COPY);
+			char subH[20];
+
+			// strcpy(subH, hiscoreTxt);
+			// strcat(subH, hiscore);
+			//proxy0_put_string(&Screen, &scr, 118, 144, scoreTxt, BLTOP_COPY);
+			// proxy0_bm_rect_fill(&Screen, &scr, 96, 64, 128, 24);
+			// proxy0_bm_rect_clear(&Screen, &scr, 97, 65, 126, 23);
+			// colorAreaUnclipped(12,8,16,8,0x10, true);
+			// proxy0_put_string(&Screen, &scr, 96, 168, subH, BLTOP_COPY);
+			//colorAreaUnclipped(12,22,12,1,0xf1, true);
 			proxy0_put_string(&Screen, &scr, 118, 176, sub, BLTOP_COPY);
 			colorAreaUnclipped(14,22,12,1,0xf1, true);
 			titlePhase = 2;
@@ -2026,14 +2035,14 @@ void frameLoop_1()
 		rasterMenuInit(true);
 		proxy0_bm_rect_fill(&Screen, &scr, 96, 64, 128, 64);
 		proxy0_bm_rect_clear(&Screen, &scr, 97, 65, 126, 62);
+		colorAreaUnclipped(12,8,16,8,0x10, true);
 		proxy0_put_string(&Screen, &scr, 1, 192, authorTxt, BLTOP_COPY);
 		proxy0_put_string(&Screen, &scr, 258, 192, author2Txt, BLTOP_COPY);
 		colorAreaUnclipped(0,24,40,1,0xe1, true);
-		proxy0_put_string(&Screen, &scr, 160 - (70 / 2), 72, titleTxt, BLTOP_COPY);
+		proxy0_put_string(&Screen, &scr, 160 - (30 / 2), 72, titleTxt, BLTOP_COPY);
 		proxy0_put_string(&Screen, &scr, 160 - (50 / 2), 96, startTxt, BLTOP_COPY);
 		proxy0_put_string(&Screen, &scr, 160 - (70 / 2), 104, levelTxt, BLTOP_COPY);
 		proxy0_put_string(&Screen, &scr, 160 - (20 / 2), 112, backTxt, BLTOP_COPY);
-		colorAreaUnclipped(12,8,16,8,0x10, true);
 		menuItem = 0;
 		proxy12_startHighlight(13,12, 14, 1, true, GCOL_WHITE);
 		paintLevMenu_1();
@@ -2096,15 +2105,15 @@ void frameLoop_1()
 		//proxy_memcpy(8, 1, Buffer, MusicInGame, 0x800);
 		proxy_memcpy(6, 1, Sfx, Sounds, 0x400);
 		proxy12_setTunes(true);
-	//	playSubtune(SUB_LEVEL_START);	
+		playSubtune(SUB_LEVEL_START);	
 		rasterInit(true);
 		proxy0_cleanScreen(true);
-		const char topLine[40] = s"00000000           X1          BALLS: --";
+		proxy12_setGlobalOrientation(ORIENTATION_DOWN);
+		const char topLine[40] = s"SC:00000000   X1 BALLS:--    HI:00000000";
 		proxy12_string_write(0, 0, topLine, VCOL_WHITE);
 		proxy12_score_reset();
 	
-		state = GS_LEVEL_INIT;
-	}
+		state = GS_LEVEL_INIT;	}
 	else if(state == GS_LEVEL_INIT)
 	{
 		proxy0_cleanScreen(false);
@@ -2423,6 +2432,10 @@ void gameLoop_1()
 		gameObjects[largeTextId].orientation = 0x7f;
 		gameObjects[largeTextId].boundingBox = proxy13_getBoundingBoxChar(0, (byte)gameObjects[largeTextId].py, 40, 3);
 		largeTextTimer = LARGE_TEXT_TIMER;
+		for (char i = 0; i < 8; i++)
+		{
+			hiscore[i] = Color2[i+32];
+		}
 
 		updateRender_1(largeTextId, true);
 		state = GS_GAMEOVER;
@@ -2828,11 +2841,15 @@ void handleDelete_1(byte id)
 			{
 				completed = true;
 			}
-			proxy12_handleScore(id);
-			proxy12_collideQueue_enqueue(id);
-			go->comp1 = go->comp1 & ~(Component1_Valueable);
-			go->color = GCOL_MED_GREY;
-			proxy12_colorBoundingBox(id);
+			// TODO: Hacky color
+			if(go->color != GCOL_MED_GREY)
+			{
+				proxy12_handleScore(id);
+				proxy12_collideQueue_enqueue(id);
+				go->comp1 = go->comp1 & ~(Component1_Valueable);
+				go->color = GCOL_MED_GREY;
+				proxy12_colorBoundingBox(id);
+			}
 		}
 	}
 
@@ -3349,11 +3366,6 @@ void updateCollisions_1()
 		if (fakeIndex != 0xff)
 		{
 			b2 = &fakeBalls[fakeIndex];
-			// z++;
-			// if(z == 1)
-			// {
-			// 	continue;
-			// }
 		}
 
 		// Distance between balls
@@ -3375,8 +3387,7 @@ void updateCollisions_1()
 		float dpNorm1 = b1->vx * nx + b1->vy * ny;
 		float dpNorm2 = b2->vx * nx + b2->vy * ny;
 
-		// Update ball velocities
-		
+		// Simplified mass		
 		float mass1 = 500;
 		float mass2;
 		if (IsBitSet(b2->comp0, Component0_Physics))
@@ -3396,19 +3407,6 @@ void updateCollisions_1()
 		b1->vy = (ty * dpTan1 + ny * m1);
 		b2->vx = (tx * dpTan2 + nx * m2);
 		b2->vy = (ty * dpTan2 + ny * m2);
-
- 
-// 		//float m1 =  (dpNorm1 * (b1->mass - b2->mass) + 2.0 * b2->mass * dpNorm2) / (b1->mass + b2->mass);
-// 		float m1 =  (dpNorm1 * (mass1 - mass2) + 2.0 * mass2 * dpNorm2) / (mass1 + mass2);
-// 		b1->vx = tx * dpTan1 + nx * m1 * b2->efficiency;
-// 		b1->vy = ty * dpTan1 + ny * m1 * b2->efficiency;
-// 		if (IsBitSet(b2->comp0, Component0_Physics))
-// 		{
-// //			float m2 =  (dpNorm2 * (b2->mass - b1->mass) + 2.0 * b1->mass * dpNorm1) / (b1->mass + b2->mass);
-// 			float m2 =  (dpNorm2 * (mass2 - mass1) + 2.0 * mass1 * dpNorm1) / (mass1 + mass2);
-// 			b2->vx = tx * dpTan2 + nx * m2 * b1->efficiency;
-// 			b2->vy = ty * dpTan2 + ny * m2 * b1->efficiency;
-// 		}
 	}
 	numColPairs = 0;
 	numFakes = 0;
@@ -4462,19 +4460,19 @@ void showBalls_2()
 {
 	char buff[2];
 	itoa(balls, buff, 10);
-	string_write_2(38, 0, "00", VCOL_WHITE);
+	string_write_2(23, 0, "00", VCOL_WHITE);
 
 	byte l = strlen(buff);
-	string_write_2(40 - l, 0, buff, VCOL_WHITE);
-	startHighlight_2(38,0,2, 1, false, VCOL_WHITE);
+	string_write_2(25-l, 0, buff, VCOL_WHITE);
+	startHighlight_2(17,0,8, 1, false, VCOL_WHITE);
 }
 
 void showMultiplier_2(byte multiplier)
 {
 	char buff[1];
 	itoa(multiplier, buff, 10);
-	string_write_2(20, 0, buff, VCOL_WHITE);
-	startHighlight_2(19,0,3, 1, false, VCOL_WHITE);
+	string_write_2(15, 0, buff, VCOL_WHITE);
+	startHighlight_2(14,0,3, 1, false, VCOL_WHITE);
 }
 
 // Increment the score from a given digit on
@@ -4487,7 +4485,7 @@ void score_inc_2(char digit, unsigned val)
 	while (val)
 	{
 		// Increment one character
-		char ch = Color2[at] + val % 10;
+		char ch = Color2[at + 3] + val % 10;
 
 		// Remove low digit from number
 		val /= 10;
@@ -4499,11 +4497,29 @@ void score_inc_2(char digit, unsigned val)
 			val++;
 		}
 
-		Color2[at] = ch;
+		Color2[at + 3] = ch;
 
 		// Next higher character
 		at--;
 	}
+
+	char i = 0;
+
+	while (i < 8 && Color2[i + 3] == Color2[i + 32])
+		i++;
+
+	// Check if new score is higher
+	if (i < 8 && Color2[i + 3] > Color2[i + 32])
+	{
+		// If so, copy to highscore
+		while (i < 8)
+		{
+			Color2[i + 32] = Color2[i + 3];
+			i++;
+		}
+	}
+
+	
 }
 
 // Reset score and update high score
@@ -4511,7 +4527,10 @@ void score_reset_2(void)
 {
 	// Clear score
 	for (char i = 0; i < 8; i++)
-		Color2[i] = '0';
+	{
+		Color2[i+3] = '0';
+		Color2[i+32] = hiscore[i];
+	}
 }
 
 void execActionEnableCollision_2(byte start, byte end)
@@ -4763,17 +4782,17 @@ void dispatchEvent_2(byte event, byte senderId, byte p1, byte p2)
 
 
 // Clear a pixel at the given coordinate
-void pix_clr_2(unsigned px, unsigned py)
-{
-	__assume(px < 320);
-	__assume(py < 200);	
+// void pix_clr_2(unsigned px, unsigned py)
+// {
+// 	__assume(px < 320);
+// 	__assume(py < 200);	
 
-	// Calculate base position in hires
-	char * dp = Hirows[py >> 3] + (px & ~7);
+// 	// Calculate base position in hires
+// 	char * dp = Hirows[py >> 3] + (px & ~7);
 
-	// Clear the pixel
-	dp[py & 7] &= clrmask[px & 7];
-}
+// 	// Clear the pixel
+// 	dp[py & 7] &= clrmask[px & 7];
+// }
 
 // Init free list of particles
 void particle_init_2(void)
@@ -4929,11 +4948,11 @@ void intro_2()
 	byte i=0;
 	int t=0;
 
-	char intro1[] = "TRANSMISSION: You are about to approach our mission target";
-	char intro2[] = "Solar System Orbix 1";
-	char intro3[] = "Priority is to eliminate all orange orbz...";
-	char intro4[] = "...to absorb the mystic energy of element 115";
-	char intro5[] = "Prepare for Landing... good luck";
+	const char intro1[] = "TRANSMISSION: You are about to approach our mission target";
+	const char intro2[] = "Solar System Orbix 1";
+	const char intro3[] = "Priority is to eliminate all orange orbz...";
+	const char intro4[] = "...to absorb the mystic energy of element 115";
+	const char intro5[] = "Prepare for Landing... good luck";
 
 	while(!joyb[0])
 	{
@@ -7446,7 +7465,7 @@ void rasterInit(bool useKernal)
 
 	rirq_init(useKernal);
 	rirq_build(&top, 4);
-	rirq_delay(&top, 5);
+	rirq_delay(&top, 8);
 	rirq_write(&top, 1, &vic.memptr, 0x68);
 	rirq_write(&top, 2, &vic.ctrl1, VIC_CTRL1_BMM | VIC_CTRL1_DEN | VIC_CTRL1_RSEL | 3);
 	rirq_call(&top, 3, joy_interrupt);
