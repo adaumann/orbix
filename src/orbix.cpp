@@ -445,7 +445,6 @@ char texts[6][12] = {"LEVEL START", "BALL LOST", "BALL SAVED", "ALL CLEAR", "LEV
 
 char bonusTxt[5] = {'B','O','N','U','S'};
 
-const char scoreTxt[41] = s"00000000           X1          BALLS: --\0";
 byte callBank;
 sbyte globalOrientation;
 byte posYTray, tray;
@@ -1312,10 +1311,10 @@ __noinline  void proxy12_decLevel()
 	eflash.bank = 1;
 }
 
-__noinline void  proxy12_printLargeString(char cy, const char *s, bool withRoundScore, bool withLevelScore)
+__noinline void  proxy12_printLargeString(char cy, const char *s, bool withRoundScore, bool withLevelScore, bool withSubText)
 {
 	eflash.bank = 2;
-	printLargeString_2(cy, s, withRoundScore, withLevelScore);
+	printLargeString_2(cy, s, withRoundScore, withLevelScore, withSubText);
 	eflash.bank = 1;
 }
 
@@ -1529,7 +1528,8 @@ void music_ff(void)
 		lda	#$0
 		jsr $c006
 	}
-
+	
+	spr_show(0, false);
 	for(signed int i=0;i<cntMusic;i++)
 	{
 		__asm
@@ -1537,6 +1537,7 @@ void music_ff(void)
 			jsr		$c003
 		}
 	}
+	spr_show(0, true);
 	__asm
 	{
 		lda	#$0f
@@ -1797,10 +1798,11 @@ __interrupt void joy_interrupt()
 	{
 		tx = sintab[tray];
 	}
+
+	byte posY;
 	if(state != GS_RUN_COMPLETED && state != GS_FINALIZE)
 	{
-		spr_set(6, true, 160 - 23 + tx, posYTray, 64 + traySprite, VCOL_WHITE, false, true, false);
-		spr_set(7, true, 160 + 23 + tx, posYTray, 64 + traySprite + 1, VCOL_WHITE, false, true, false);
+		posY = posYTray;
 		if (timer % 2 == 0)
 		{
 			tray++;
@@ -1808,9 +1810,10 @@ __interrupt void joy_interrupt()
 	}
 	else
 	{
-		spr_set(6, true, 160 - 23 + tx, 255, 64 + traySprite, VCOL_WHITE, false, true, false);
-		spr_set(7, true, 160 + 23 + tx, 255, 64 + traySprite + 1, VCOL_WHITE, false, true, false);
+		posY = 255;
 	}
+	spr_set(6, true, 160 - 23 + tx, posY, 64 + traySprite, VCOL_WHITE, false, true, false);
+	spr_set(7, true, 160 + 23 + tx, posY, 64 + traySprite + 1, VCOL_WHITE, false, true, false);
 }
 
 // Set a pixel at the given coordinate
@@ -1964,6 +1967,8 @@ void frameLoop_1()
 	char backTxt[] = "Back";
 	char authorTxt[] = "code: andy daumann";
 	char author2Txt[] = "music: picrard";
+	char scoreTxt[] = "Score:";
+	char hiscoreTxt[] = "Hiscore:";
 
 	char titleTxt[] = "ORBIX Preview 1";
 
@@ -2001,6 +2006,8 @@ void frameLoop_1()
 		}
 		if(timer == 255 && titlePhase == 1)
 		{
+			proxy0_put_string(&Screen, &scr, 118, 144, scoreTxt, BLTOP_COPY);
+			proxy0_put_string(&Screen, &scr, 118, 162, hiscoreTxt, BLTOP_COPY);
 			proxy0_put_string(&Screen, &scr, 118, 176, sub, BLTOP_COPY);
 			colorAreaUnclipped(14,22,12,1,0xf1, true);
 			titlePhase = 2;
@@ -2076,7 +2083,7 @@ void frameLoop_1()
 	}
 	else if(state == GS_INTRO)
 	{
-		proxy0_cleanScreen(true);
+		proxy0_cleanScreen(false);
 		proxy12_intro();
 		state = GS_GAME_INIT;
 	}
@@ -2092,7 +2099,8 @@ void frameLoop_1()
 	//	playSubtune(SUB_LEVEL_START);	
 		rasterInit(true);
 		proxy0_cleanScreen(true);
-		proxy12_string_write(0, 0, scoreTxt, VCOL_WHITE);
+		const char topLine[40] = s"00000000           X1          BALLS: --";
+		proxy12_string_write(0, 0, topLine, VCOL_WHITE);
 		proxy12_score_reset();
 	
 		state = GS_LEVEL_INIT;
@@ -2348,6 +2356,7 @@ void gameLoop_1()
 
 			if (completed)
 			{
+				proxy12_setGlobalOrientation(ORIENTATION_DOWN);
 				state = GS_LEVEL_INIT;
 				proxy12_incLevel(true);
 			}
@@ -2520,15 +2529,19 @@ void updateRender_1(byte id, bool init)
 			proxy12_colorBoundingBox(id);
 			if (go->orientation == ORIENTATION_DOWN)
 			{
-				proxy12_printLargeString((char)(go->py), texts[go->pattern], true, false);
+				proxy12_printLargeString((char)(go->py), texts[go->pattern], true, false, false);
 			}
 			else if (go->orientation == ORIENTATION_UP)
 			{
-				proxy12_printLargeString((char)(go->py), texts[go->pattern], false, true);
+				proxy12_printLargeString((char)(go->py), texts[go->pattern], false, true, false);
+			}
+			else if(go->orientation == ORIENTATION_LEFT)
+			{
+				proxy12_printLargeString((char)(go->py), texts[go->pattern], false, false, true);
 			}
 			else
 			{
-				proxy12_printLargeString((char)(go->py), texts[go->pattern], false, false);
+				proxy12_printLargeString((char)(go->py), texts[go->pattern], false, false, false);
 			}
 		}
 	}
@@ -2985,14 +2998,14 @@ void updatePhysics_1(byte id)
 
 	if(id == mainBall && stuckCnt > 0)
 	{
-		if(stuckCnt > 20)
+		if(stuckCnt > 10)
 		{
 			stuckCnt = 0;
 			proxy12_killBall(id);
 		}
 		else
 		{
-			if ((int)(go->vx) == 0 && (int)(go->vy) - 4 * globalOrientation == 0)
+			if (abs((int)go->vx) <= 2 && abs((int)go->vy) <= 4)
 			{
 				stuckCnt++;
 			}
@@ -3007,7 +3020,7 @@ void updatePhysics_1(byte id)
 		// memset(Color2, 0x20, 80);
 		// proxy12_integer_write(9,0,go->vx);
 		// proxy12_integer_write(13,0,go->vy);
-		if ((int)(go->vx) == 0 && (int)(go->vy) - 4 * globalOrientation == 0 && !IsBitSet(go->comp2, Component2_Destroyed))
+		if (abs((int)go->vx) <= 2 && abs((int)go->vy) <= 4 && !IsBitSet(go->comp2, Component2_Destroyed))
 		{
 			stuckCnt = 1;
 			playSfx(SND_CATCH);
@@ -3501,7 +3514,7 @@ bool setGlobalOrientation_2(sbyte orientation)
 }
 
 // Write a zero terminated string on screen
-void printLargeString_2(char cy, const char *s, bool withRoundScore, bool withLevelScore)
+void printLargeString_2(char cy, const char *s, bool withRoundScore, bool withLevelScore, bool withSubText)
 {
 	byte len = strlen(s);
 	cy = 8 * cy;
@@ -3521,11 +3534,17 @@ void printLargeString_2(char cy, const char *s, bool withRoundScore, bool withLe
 		s++;
 		cx += 16;
 	}
-	// if (withSubText)
-	// {
-	// 	proxy0_bm_rect_clear(&Screen, &scr, 8, cy + 16, 314 - 10, 8);
-	// 	proxy0_put_string(&Screen, &scr, 160 - strlen(sub) * 3, cy + 16, sub, BLTOP_COPY);
-	// }
+	if (withSubText)
+	{
+		char sub[20];
+		char buf1[3];
+		itoa(level + 1, buf1, 10);
+		strcpy(sub, "Level: ");
+		strcat(sub, buf1);
+
+		proxy0_bm_rect_clear(&Screen, &scr, 8, cy + 16, 314 - 10, 8);
+		proxy0_put_string(&Screen, &scr, 160 - strlen(sub) * 3, cy + 16, sub, BLTOP_COPY);
+	}
 
 	if (withRoundScore)
 	{
@@ -5045,8 +5064,8 @@ void doFirework_2(byte type)
 			if (i < 64)
 			{
 				otray = tray;
-				particle_add_2((160 + sintab[otray]) * 64, startx * 64, rnorm_2(1) >> 6, globalOrientation * -1 * (120 + (rnorm_2(1) >> 6)));
-				proxy0_pix_set((160 + sintab[otray]), startx, true);
+				particle_add_2((160 + tx) * 64, startx * 64, rnorm_2(1) >> 6, globalOrientation * -1 * (120 + (rnorm_2(1) >> 6)));
+				proxy0_pix_set((160 + tx), startx, true);
 			}
 			particle_move_2(8, true);
 		}
@@ -5090,6 +5109,10 @@ void saveSimulationStart_3(byte id)
 	go = &gameObjects[id];
 	saveSimPx = go->px;
 	saveSimPy = go->py;
+	go->ax = 0;
+	go->ay = 0;
+	go->vx = 0;
+	go->vy = 0;
 	hasSimHit = false;
 	simEndCnt = 0;
 	simDone = false;
@@ -5144,11 +5167,11 @@ byte simulatePhysics_3(byte id)
 	go->ax = -go->vx; // * Drag;						// Apply drag and gravity
 	go->ay = -go->vy /* Drag  */ + Gravity * globalOrientation;
 
-	go->vx += go->ax * timeElapsing; //* go->fSimTimeRemaining;	// Update Velocity
-	go->vy += go->ay * timeElapsing; //* go->fSimTimeRemaining;
+	go->vx += go->ax * timeElapsing ; //* go->fSimTimeRemaining;	// Update Velocity
+	go->vy += go->ay * timeElapsing ; //* go->fSimTimeRemaining;
 
-	go->px += go->vx * timeElapsing; //* go->fSimTimeRemaining;	// Update position
-	go->py += go->vy * timeElapsing; //* go->fSimTimeRemaining;
+	go->px += go->vx * timeElapsing ; //* go->fSimTimeRemaining;	// Update position
+	go->py += go->vy * timeElapsing ; //* go->fSimTimeRemaining;
 
 	go->boundingBox = getBoundingBoxCircle_3(go->px, go->py, 4,8);
 
@@ -6286,7 +6309,7 @@ void initScene0_4()
 
 	proxy3_setGameObjectImage(numObjects++, IMG_LANDSCAPE1, 0, 22, 40, 3, true, GCOL_DARK_GREY, true);
 	proxy3_setGameObjectImage(numObjects++, IMG_ALIEN1, 16, 5, 8, 8, true, GCOL_MED_GREY, false);
-	proxy3_setGameObjectWallEdge(numObjects++, 130, 180, 180, 180, 4, 0.2, GCOL_RED, true);
+	//proxy3_setGameObjectWallEdge(numObjects++, 130, 180, 180, 180, 4, 0.2, GCOL_RED, true);
 	// proxy3_setGameObjectValueableTimedEdge(numObjects++, 180, 150, 180, 170, 4, true);
 	// proxy3_setGameObjectValueableTimedEdge(numObjects++, 200, 150, 200, 170, 4, true);
 	// proxy3_setGameObjectValueableTimedEdge(numObjects++, 220, 150, 220, 170, 4, true);
@@ -6366,7 +6389,7 @@ void initScene0_4()
 
 	largeTextId = numObjects;
 	largeTextTimer = LARGE_TEXT_TIMER;
-	proxy3_setGameObjectLargeText(numObjects++, 8, true, 0x7f, 0, GCOL_WHITE);
+	proxy3_setGameObjectLargeText(numObjects++, 8, true, ORIENTATION_LEFT, 0, GCOL_WHITE);
 }
 
 void initScene1_4()
@@ -6423,7 +6446,7 @@ void initScene1_4()
 
     largeTextId = numObjects;
     largeTextTimer = LARGE_TEXT_TIMER;
-    proxy3_setGameObjectLargeText(numObjects++, 8, true, 0x7f, 0, GCOL_WHITE);
+    proxy3_setGameObjectLargeText(numObjects++, 8, true, ORIENTATION_LEFT, 0, GCOL_WHITE);
 }
 
 void initScene2_4()
@@ -6476,7 +6499,7 @@ void initScene2_4()
 
     largeTextId = numObjects;
     largeTextTimer = LARGE_TEXT_TIMER;
-    proxy3_setGameObjectLargeText(numObjects++, 8, true, 0x7f, 0, GCOL_WHITE);
+    proxy3_setGameObjectLargeText(numObjects++, 8, true, ORIENTATION_LEFT, 0, GCOL_WHITE);
 }
 
 void initScene3_4()
@@ -6574,7 +6597,7 @@ void initScene3_4()
 
     largeTextId = numObjects;
     largeTextTimer = LARGE_TEXT_TIMER;
-    proxy3_setGameObjectLargeText(numObjects++, 8, true, 0x7f, 0, GCOL_WHITE);
+    proxy3_setGameObjectLargeText(numObjects++, 8, true, ORIENTATION_LEFT, 0, GCOL_WHITE);
 }
 
 void initScene4_4()
@@ -6618,7 +6641,7 @@ void initScene4_4()
     // Adding large text
     largeTextId = numObjects;
     largeTextTimer = LARGE_TEXT_TIMER;
-    proxy3_setGameObjectLargeText(numObjects++, 8, true, 0x7f, 0, GCOL_WHITE);
+    proxy3_setGameObjectLargeText(numObjects++, 8, true, ORIENTATION_LEFT, 0, GCOL_WHITE);
 }
 
 void initScene5_4()
@@ -6691,7 +6714,7 @@ void initScene5_4()
 
     largeTextId = numObjects;
     largeTextTimer = LARGE_TEXT_TIMER;
-    proxy3_setGameObjectLargeText(numObjects++, 8, true, 0x7f, 0, GCOL_WHITE);
+    proxy3_setGameObjectLargeText(numObjects++, 8, true, ORIENTATION_LEFT, 0, GCOL_WHITE);
 }
 
 void initScene6_4()
@@ -6750,7 +6773,7 @@ void initScene6_4()
     // Adding large text
     largeTextId = numObjects;
     largeTextTimer = LARGE_TEXT_TIMER;
-    proxy3_setGameObjectLargeText(numObjects++, 8, true, 0x7f, 0, GCOL_WHITE);
+    proxy3_setGameObjectLargeText(numObjects++, 8, true, ORIENTATION_LEFT, 0, GCOL_WHITE);
 }
 
 void initScene7_4()
@@ -6864,7 +6887,7 @@ void initScene7_4()
     // Adding large text
     largeTextId = numObjects;
     largeTextTimer = LARGE_TEXT_TIMER;
-    proxy3_setGameObjectLargeText(numObjects++, 8, true, 0x7f, 0, GCOL_WHITE);
+    proxy3_setGameObjectLargeText(numObjects++, 8, true, ORIENTATION_LEFT, 0, GCOL_WHITE);
 }
 
 void initScene8_4()
@@ -6942,7 +6965,7 @@ void initScene8_4()
     largeTextId = numObjects;
     largeTextTimer = LARGE_TEXT_TIMER;
 
-    proxy3_setGameObjectLargeText(numObjects++, 8, true, 0x7f, 0, GCOL_WHITE);
+    proxy3_setGameObjectLargeText(numObjects++, 8, true, ORIENTATION_LEFT, 0, GCOL_WHITE);
 }
 
 void initScene9_4()
@@ -7037,7 +7060,7 @@ void initScene9_4()
     largeTextId = numObjects;
     largeTextTimer = LARGE_TEXT_TIMER;
 
-    proxy3_setGameObjectLargeText(numObjects++, 8, true, 0x7f, 0, GCOL_WHITE);
+    proxy3_setGameObjectLargeText(numObjects++, 8, true, ORIENTATION_LEFT, 0, GCOL_WHITE);
 }
 
 #pragma code(bcode5)
@@ -7144,7 +7167,7 @@ void initScene10_5()
     // Adding large text
     largeTextId = numObjects;
     largeTextTimer = LARGE_TEXT_TIMER;
-    proxy3_setGameObjectLargeText(numObjects++, 8, true, 0x7f, 0, GCOL_WHITE);
+    proxy3_setGameObjectLargeText(numObjects++, 8, true, ORIENTATION_LEFT, 0, GCOL_WHITE);
 }
 
 void initScene11_5()
@@ -7199,7 +7222,7 @@ void initScene11_5()
     largeTextId = numObjects;
     largeTextTimer = LARGE_TEXT_TIMER;
 
-    proxy3_setGameObjectLargeText(numObjects++, 8, true, 0x7f, 0, GCOL_WHITE);
+    proxy3_setGameObjectLargeText(numObjects++, 8, true, ORIENTATION_LEFT, 0, GCOL_WHITE);
 }
 
 void initScene12_5()
@@ -7307,7 +7330,7 @@ void initScene12_5()
     largeTextId = numObjects;
     largeTextTimer = LARGE_TEXT_TIMER;
 
-    proxy3_setGameObjectLargeText(numObjects++, 8, true, 0x7f, 0, GCOL_WHITE);
+    proxy3_setGameObjectLargeText(numObjects++, 8, true, ORIENTATION_LEFT, 0, GCOL_WHITE);
 
 }
 
@@ -7393,7 +7416,7 @@ void initScene13_5()
     largeTextId = numObjects;
     largeTextTimer = LARGE_TEXT_TIMER;
 
-    proxy3_setGameObjectLargeText(numObjects++, 8, true, 0x7f, 0, GCOL_WHITE);
+    proxy3_setGameObjectLargeText(numObjects++, 8, true, ORIENTATION_LEFT, 0, GCOL_WHITE);
 
 }
 

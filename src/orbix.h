@@ -224,7 +224,7 @@ void activateSecondaryBall_1(byte id, byte targetId);
 void addDepObject_3(byte sourceId, byte targetId);
 void deactivateSecondaryBall_1(byte targetId);
 void setGameObjectBall_3(byte id, float px, float py, float vx, float vy, float radius, byte spritenum, bool isMainBall, bool isOn, byte color);
-void printLargeString_2(char cy, const char *s, bool withRoundScore, bool withLevelScore);
+void printLargeString_2(char cy, const char *s, bool withRoundScore, bool withLevelScore, bool withSubText);
 //void printLargeString_2(char cy, const char *s, bool withRoundScore, bool withLevelScore, bool withSubText, const char *sub);
 void char_put_2(char cx, char cy, char c); 
 void executeLargeTextTimer_2();
