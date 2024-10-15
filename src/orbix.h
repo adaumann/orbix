@@ -144,7 +144,7 @@ void pop();
 float max_1(float x1, float x2);
 float min_1(float x1, float x2);
 void updateRender_1(byte id, bool init);
-bool setGlobalOrientation_2(sbyte orientation);
+bool setGlobalOrientation_2(sbyte orientation, bool isInit);
 void catchBall_2(byte id, int target);
 void execActionEnableCollision_2(byte start, byte end);
 void execActionDisableCollision_2(byte start, byte end);
@@ -297,6 +297,7 @@ void initScene10_5();
 void initScene11_5();
 void initScene12_5();
 void initScene13_5();
+void initScene14_5();
 
 
 // proxy

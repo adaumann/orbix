@@ -18,7 +18,10 @@
 #include "orbix.h"
 
 #pragma region( zeropage, 0x80, 0xfa, , , {zeropage})
-#pragma region(main, 0x08e7, 0x8000, , , { code, data, bss, heap, stack } )
+#pragma region(main, 0x0905, 0x8000, , , { code, data, bss, heap, stack } )
+
+// #pragma stacksize(1024)
+// #pragma heapsize(600)
 
 #pragma section(bcode1, 0)
 #pragma section(bdata1, 0)
@@ -386,6 +389,7 @@ RIRQCode bottom, top, rmenu;
 #define Drag 0.999
 #define Gravity 300
 #define Stable 1
+#define CannonAngleStepSlow 0.034905
 #define CannonAngleStep 0.06981
 #define CannonPower 25
 #define TimeTimedDelay 16
@@ -406,7 +410,7 @@ RIRQCode bottom, top, rmenu;
 
 
 #define MaxObjects 64
-#define MaxLevels 14
+#define MaxLevels 15
 #define MaxScoreDisplay 16
 #define MaxBombDisplay 16
 #define MaxActors 16
@@ -443,7 +447,7 @@ const byte blues8[8] = { 0x10,0xf0,0xc0, 0xb0, 0xb0, 0xc0,0xf0,0x10 };
 
 const char texts[6][12] = {"LEVEL START", "BALL LOST", "BALL SAVED", "ALL CLEAR", "LEVEL DONE", "GAME OVER"};
 
-char bonusTxt[5] = {'B','O','N','U','S'};
+const char bonusTxt[5] = {'B','O','N','U','S'};
 
 char hiscore[8] = "00000000";
 
@@ -507,7 +511,10 @@ byte simEndCnt;
 bool hasSimHit, simDone;
 float saveSimPx, saveSimPy;
 bool simLeftRight;
+byte simSteps;
 signed char tx;
+int gravity;
+bool isGravCannon;
 
 // Heads of used and free list
 Particle	*	pfirst, * pfree;
@@ -863,11 +870,36 @@ __noinline void proxy12_doFirework(byte type)
 	eflash.bank = 1;
 }
 
-__noinline bool proxy12_setGlobalOrientation(sbyte orientation)
+__noinline bool proxy12_setGlobalOrientation(sbyte orientation, bool isInit)
 {
 	eflash.bank = 2;
-	bool r = setGlobalOrientation_2(orientation);
+	bool r = setGlobalOrientation_2(orientation, isInit);
 	eflash.bank = 1;
+	return r;
+}
+
+__noinline bool proxy32_setGlobalOrientation(sbyte orientation, bool isInit)
+{
+	eflash.bank = 2;
+	bool r = setGlobalOrientation_2(orientation, isInit);
+	eflash.bank = 3;
+	return r;
+}
+
+__noinline bool proxy42_setGlobalOrientation(sbyte orientation, bool isInit)
+{
+	eflash.bank = 2;
+	bool r = setGlobalOrientation_2(orientation, isInit);
+	eflash.bank = 4;
+	return r;
+}
+
+
+__noinline bool proxy52_setGlobalOrientation(sbyte orientation, bool isInit)
+{
+	eflash.bank = 2;
+	bool r = setGlobalOrientation_2(orientation, isInit);
+	eflash.bank = 5;
 	return r;
 }
 
@@ -1194,6 +1226,13 @@ __noinline void proxy45_initScene13()
 {
     eflash.bank = 5;
     initScene13_5();
+    eflash.bank = 4;
+}
+
+__noinline void proxy45_initScene14()
+{
+    eflash.bank = 5;
+    initScene14_5();
     eflash.bank = 4;
 }
 
@@ -1569,6 +1608,10 @@ void copyTitle()
 
 void drawImageUnclipped(byte* byte_stream, byte x, byte y, byte width, byte height) 
 {
+	// __assume(x < 40);	
+	// __assume(y < 25);	
+	// __assume(width < 40);	
+	// __assume(height < 25);	
     // Calculate the starting address of the area to be filled
     unsigned char *screen = (unsigned char *)Hires;
 	int pos = 0;
@@ -1930,7 +1973,8 @@ void gameLoopLevelInit()
 	spr_show(2, false);
 
 	//updateRender_1(largeTextId, true);
-	proxy12_setGlobalOrientation(ORIENTATION_DOWN);
+//	globalOrientation = ORIENTATION_DOWN;
+//	gravity = Gravity;
 }
 
 void paintLevMenu_1()
@@ -2034,7 +2078,9 @@ void frameLoop_1()
 	{
 		if(joyb[0] && menuItem <= 1)
 		{
-			state = GS_TITLE_FADE_OUT;
+			state = GS_GAME_INIT;
+			// TODO
+			//state = GS_TITLE_FADE_OUT;
 		}
 		if(joyb[0] && menuItem == 2)
 		{
@@ -2089,7 +2135,8 @@ void frameLoop_1()
 		playSubtune(SUB_LEVEL_START);	
 		rasterInit(true);
 		proxy0_cleanScreen(true);
-		proxy12_setGlobalOrientation(ORIENTATION_DOWN);
+		// globalOrientation = ORIENTATION_DOWN;
+		// gravity = Gravity;
 		const char topLine[40] = s"SC:00000000   X1 BALLS:--    HI:00000000";
 		proxy12_string_write(0, 0, topLine, VCOL_WHITE);
 		proxy12_score_reset();
@@ -2180,7 +2227,8 @@ void gameLoop_1()
 		updateRender_1(mainBall, false);
 		byte endSim = proxy13_simulatePhysics(mainBall);
 		updateCollisions_1();
-		if(endSim == SIM_CHANGE)
+		simSteps++;
+		if(endSim == SIM_CHANGE || simSteps > 63)
 		{
 			state = GS_SIMULATE_FINISH;
 		}
@@ -2192,7 +2240,6 @@ void gameLoop_1()
 		{
 
 		}
-
 	}
 	else if( state == GS_SIMULATE_FINISH)
 	{
@@ -2346,7 +2393,6 @@ void gameLoop_1()
 
 			if (completed)
 			{
-				proxy12_setGlobalOrientation(ORIENTATION_DOWN);
 				state = GS_LEVEL_INIT;
 				proxy12_incLevel(true);
 			}
@@ -2983,9 +3029,8 @@ void updatePhysics_1(byte id)
 		return;
 	}
 
-	go->ax = -go->vx; // * Drag;						// Apply drag and gravity
-	go->ay = -go->vy /* Drag  */ + Gravity * globalOrientation;
-
+	go->ax = -go->vx; 
+	go->ay = -go->vy + gravity;
 	go->vx += go->ax * timeElapsing; //* go->fSimTimeRemaining;	// Update Velocity
 	go->vy += go->ay * timeElapsing; //* go->fSimTimeRemaining;
 
@@ -3175,7 +3220,7 @@ void updatePhysics_1(byte id)
 						}
 						if (IsBitSet(target->comp1, Component1_SwitchOrientation))
 						{
-							swapped = proxy12_setGlobalOrientation(target->orientation);
+							swapped = proxy12_setGlobalOrientation(target->orientation, false);
 						}
 						// Collision has occured
 						proxy12_addCollidingPairs(id, loopc, 0xff);
@@ -3461,31 +3506,47 @@ void catchBall_2(byte id, int target)
 	proxy21_updateRender(target, true);
 }
 
-bool setGlobalOrientation_2(sbyte orientation)
+bool setGlobalOrientation_2(sbyte orientation, bool isInit)
 {
 	if(state == GS_FINALIZE)
 	{
 		return false;
 	}
-	if (orientation != globalOrientation)
+	if (orientation != globalOrientation || isInit)
 	{
-		proxy21_deleteRender(mainCannon, true);
 		globalOrientation = orientation;
-		if (orientation == ORIENTATION_DOWN)
+		if(isGravCannon)
 		{
-			posYTray = 229;
-			traySprite = 5;
+			proxy21_deleteRender(mainCannon, true);
+			if (orientation == ORIENTATION_DOWN)
+			{
+				posYTray = 229;
+				traySprite = 5;
+				gravity = Gravity;
+			}
+			else
+			{
+				posYTray = 58;
+				traySprite = 15;
+				gravity = -Gravity;
+			}
+			proxy0_spr_image(6, 64 + traySprite);			
+			proxy0_spr_image(7, 64 + traySprite + 1);			
+			proxy23_setGameObjectCannon(mainCannon, 160, 18, 20, ORIENTATION_DOWN, GCOL_MED_GREY, true, true);
+			proxy21_updateRender(mainCannon, true);
+			playSfx(SND_GRAVITY);
 		}
 		else
 		{
-			posYTray = 58;
-			traySprite = 15;
+			if (orientation == ORIENTATION_DOWN)
+			{
+				gravity = Gravity;
+			}
+			else
+			{
+				gravity = -Gravity;
+			}
 		}
-		proxy0_spr_image(6, 64 + traySprite);			
-		proxy0_spr_image(7, 64 + traySprite + 1);			
-		proxy23_setGameObjectCannon(mainCannon, 160, 18, 20, ORIENTATION_DOWN, GCOL_MED_GREY, true, true);
-		proxy21_updateRender(mainCannon, true);
-		playSfx(SND_GRAVITY);
 
 		return true;
 	}
@@ -4516,8 +4577,18 @@ void score_reset_2(void)
 
 void execActionEnableCollision_2(byte start, byte end)
 {
+	struct CollidingTimer *colTimer;
+
 	for (int i = start; i <= end; i++)
 	{
+		// for (byte j = 0; j < MaxColTimers; j++)
+		// {
+		// 	colTimer = &collidingTimers[i];
+		// 	if(colTimer->id == i)
+		// 	{
+		// 		colTimer->id = 0xff;
+		// 	}
+		// }
 		struct GameObject *go;
 		go = &gameObjects[i];
 		go->comp0 |= Component0_CollideAble;
@@ -4527,8 +4598,18 @@ void execActionEnableCollision_2(byte start, byte end)
 
 void execActionDisableCollision_2(byte start, byte end)
 {
+	struct CollidingTimer *colTimer;
+
 	for (int i = start; i <= end; i++)
 	{
+		// for (byte j = 0; j < MaxColTimers; j++)
+		// {
+		// 	colTimer = &collidingTimers[i];
+		// 	if(colTimer->id == i)
+		// 	{
+		// 		colTimer->id = 0xff;
+		// 	}
+		// }
 		struct GameObject *go;
 		go = &gameObjects[i];
 		go->comp0 &= ~Component0_CollideAble;
@@ -5135,13 +5216,10 @@ void saveSimulationStart_3(byte id)
 	go = &gameObjects[id];
 	saveSimPx = go->px;
 	saveSimPy = go->py;
-	go->ax = 0;
-	go->ay = 0;
-	go->vx = 0;
-	go->vy = 0;
 	hasSimHit = false;
 	simEndCnt = 0;
 	simDone = false;
+	simSteps = 0;
 	proxy32_particle_init();
 }
 
@@ -5190,8 +5268,8 @@ byte simulatePhysics_3(byte id)
 		}
 	} 	
 
-	go->ax = -go->vx; // * Drag;						// Apply drag and gravity
-	go->ay = -go->vy /* Drag  */ + Gravity * globalOrientation;
+	go->ax = -go->vx;
+	go->ay = -go->vy + (float)gravity;
 
 	go->vx += go->ax * timeElapsing ; //* go->fSimTimeRemaining;	// Update Velocity
 	go->vy += go->ay * timeElapsing ; //* go->fSimTimeRemaining;
@@ -5204,20 +5282,22 @@ byte simulatePhysics_3(byte id)
 	// Crudely wrap go->s to screen - note this cause issues when collisions occur on screen boundaries
 	if (go->px < 6 || go->px >= ScreenWidth - 6)
 	{
+		hasSimHit = true;
 		go->px = go->px < 6 ? 6 : ScreenWidth - 6;
 		go->vx = -go->vx;
 	}
 	if ((globalOrientation == ORIENTATION_DOWN && go->py < 8) )
 	{
+		hasSimHit = true;
 		go->py = 8;
 		go->vy = -go->vy;
 	}
 
 	if (globalOrientation == ORIENTATION_UP && go->py > ScreenHeight)
 	{
+		hasSimHit = true;
 		go->py = ScreenHeight;
 		go->vy = -go->vy;
-
 	}
 	if ((globalOrientation == ORIENTATION_DOWN && go->py > ScreenHeight - 8) || (globalOrientation == ORIENTATION_UP && go->py < 16))
 	{
@@ -6185,7 +6265,8 @@ void preInitScene_3()
 	cntMusic = 0;
 	timeElapsing = TimeElapsingNorm;
 	bombDistance = 60;
-	// proxy32_setGlobalOrientation(ORIENTATION_DOWN);
+	isGravCannon = true;
+	proxy32_setGlobalOrientation(ORIENTATION_DOWN, true);	
 
 	struct CollidingTimer *ct;
 
@@ -6258,6 +6339,9 @@ void initScene_4(void)
 	case 13:
 		proxy45_initScene13();
 		break;
+	case 14:
+		proxy45_initScene14();
+		break;
 	default:
 		break;
 	}
@@ -6326,7 +6410,6 @@ void initScene0_4()
 	registerCallBank(4);
     balls = 10;
     proxy3_setGameObjectBall(numObjects++, 160, 22, 0, 0, 4, 0, true, true, VCOL_WHITE);
- //   proxy3_setGameObjectBall(numObjects++, 171, 80, 0, 0, 4, 1, false, true, VCOL_GREEN);
     proxy3_setGameObjectCannon(numObjects++, 160, 18, 18, ORIENTATION_DOWN, GCOL_DARK_GREY, true, true);
     float step1 = 0;
     float step2 = 0;
@@ -7097,6 +7180,8 @@ void initScene10_5()
 	registerCallBank(5);
     balls = 12;
 	byte ballId = numObjects;
+	isGravCannon = false;
+	proxy52_setGlobalOrientation(ORIENTATION_DOWN, true);	
 
     proxy3_setGameObjectBall(numObjects++, 160, 180, 0, 0, 4, 0, true, true, VCOL_WHITE);
     proxy3_setGameObjectCannon(numObjects++, 160, 180, 18, ORIENTATION_UP, GCOL_DARK_GREY, false, true);
@@ -7363,20 +7448,22 @@ void initScene12_5()
 void initScene13_5()
 {
     registerCallBank(5);
-    balls = 12; // Number of balls for this level
+    balls = 9; // Number of balls for this level
     // Cannon setup
     proxy3_setGameObjectBall(numObjects++, 160, 22, 0, 0, 4, 0, true, true, VCOL_WHITE);
     proxy3_setGameObjectCannon(numObjects++, 160, 18, 18, ORIENTATION_DOWN, GCOL_DARK_GREY, true, true);
     proxy3_setGameObjectImage(numObjects++, IMG_LANDSCAPE1, 0, 22, 40, 3, true, GCOL_DARK_GREY, true);
+	proxy3_setGameObjectImage(numObjects++, IMG_SHIP1, 16, 5, 8, 8, true, GCOL_MED_GREY, false);
 
-    float x1e = 0, y1e = 25, x2e = 320, y2e = 60;
+//    float x1e = 0, y1e = 25, x2e = 320, y2e = 60;
+    float x1e = 0, y1e = 35, x2e = 320, y2e = 70;
 
     for(byte i = 0; i < 9; i++)
     {
         float xa1e = x1e + 19;
-        float ya1e = y1e + 8 + i * 0.6;
+        float ya1e = y1e + 9 + i * 0.6;
         float xa2e = x2e - 19;
-        float ya2e = y2e + 8 + i * 0.6;
+        float ya2e = y2e + 9 + i * 0.6;
 
         if((i + 3) % 4 == 0)
         {
@@ -7398,16 +7485,16 @@ void initScene13_5()
     }
 
     x1e = 0; 
-	y1e = 65; 
+	y1e = 75; 
 	x2e = 320; 
-	y2e = 20;
+	y2e = 30;
 
     for(byte i = 0; i < 6; i++)
     {
         float xa1e = x1e + 19;
-        float ya1e = y1e + 8 + i * 0.9;
+        float ya1e = y1e + 9 + i * 0.9;
         float xa2e = x2e - 19;
-        float ya2e = y2e + 8 + i * 0.9;
+        float ya2e = y2e + 9 + i * 0.9;
 
         if((i + 3) % 4 == 0)
         {
@@ -7433,9 +7520,110 @@ void initScene13_5()
 	//112/132
 	//133/149
 
-    proxy3_setGameObjectLaser(numObjects++, 196, 87, 172, 110, GCOL_YELLOW, true);
-    proxy3_setGameObjectLaser(numObjects++, 118, 132, 142, 155, GCOL_YELLOW, true);
-    proxy3_setGameObjectCircleOrientation(numObjects++, 132, 132, 8, ORIENTATION_UP, GCOL_RED, PAT_ARROW_UP, 0);
+    proxy3_setGameObjectLaser(numObjects++, 196, 101, 172, 124, GCOL_YELLOW, true);
+    proxy3_setGameObjectLaser(numObjects++, 118, 142, 142, 165, GCOL_YELLOW, true);
+    proxy3_setGameObjectCircleOrientation(numObjects++, 142, 142, 8, ORIENTATION_UP, GCOL_RED, PAT_ARROW_UP, 0);
+
+
+    // Adding large text to announce level start
+    largeTextId = numObjects;
+    largeTextTimer = LARGE_TEXT_TIMER;
+
+    proxy3_setGameObjectLargeText(numObjects++, 8, true, ORIENTATION_LEFT, 0, GCOL_WHITE);
+
+}
+
+void initScene14_5()
+{
+    registerCallBank(5);
+    balls = 15; // Number of balls for this level
+	isGravCannon = false;
+
+	#define w 24
+
+	proxy52_setGlobalOrientation(ORIENTATION_DOWN, true);	
+
+    proxy3_setGameObjectCannon(numObjects++, 40, 32, 16, ORIENTATION_RIGHT, GCOL_DARK_GREY, false, true);
+    // Cannon setup
+    proxy3_setGameObjectBall(numObjects++, 160, 22, 0, 0, 4, 0, true, true, VCOL_WHITE);
+    proxy3_setGameObjectImage(numObjects++, IMG_LANDSCAPE2, 0, 22, 40, 3, true, GCOL_DARK_GREY, true);
+
+    proxy3_setGameObjectLaser(numObjects++, 0, 64, 270, 64, GCOL_YELLOW, true);
+    proxy3_setGameObjectLaser(numObjects++, 320, 128, 50, 128, GCOL_YELLOW, true);
+	byte l1 = numObjects;
+    proxy3_setGameObjectLaser(numObjects++, 50, 64, 50, 128, GCOL_YELLOW, true);
+
+    proxy3_setGameObjectCannon(numObjects++, 12, 128, 12, ORIENTATION_RIGHT, GCOL_MED_GREY, false, false);	
+    proxy3_setGameObjectCannon(numObjects++, 296, 64, 12, ORIENTATION_LEFT, GCOL_MED_GREY, false, false);
+
+    byte t1 = numObjects;
+    proxy3_setGameObjectTimedDelayedCircle(numObjects++, 10, 8 + 6, 6, 0.6, GCOL_YELLOW, PAT_BONUS, true, false, 100);
+    byte t2 = numObjects;
+	proxy3_setGameObjectSwitchCircle(numObjects++, 163, 64 - w, 10, 1.0, GCOL_YELLOW, true);
+    byte t3 = numObjects;
+    proxy3_setGameObjectTimedDelayedCircle(numObjects++, 288, 64 + w, 6, 0.6, GCOL_YELLOW, PAT_BONUS, true, false, 100);
+
+	byte p1 = numObjects;
+    proxy3_setGameObjectPortal(numObjects++, 288, 64 - w, 8, true);    
+	byte p2 = numObjects;
+    proxy3_setGameObjectPortal(numObjects++, 20, 128 + w , 8, true);    
+	byte p3 = numObjects;
+    proxy3_setGameObjectPortal(numObjects++, 10, 64 - w , 8, false);    
+
+	byte y;
+	byte start1 = numObjects;
+    for (float x = 80; x <= 262; x += 32)
+    {
+        y = 10 * cos((x / 320) * 5 * PI) + 32;
+		if(rand() & 2 > 1)
+		{
+			proxy3_setGameObjectTimedValuableCircle(numObjects++, x, y, 6, true);
+		}
+		else
+		{
+		    proxy3_setGameObjectTimedCircle(numObjects++, x, y, 6, true);
+		}
+		
+	}
+    for (float x = 12; x <= 304; x += 32)
+    {
+        y = 10 * sin((x / 320) * 5 * PI) + 96;
+		if(rand() & 2 > 1)
+		{
+			proxy3_setGameObjectTimedValuableCircle(numObjects++, x, y, 6, true);
+		}
+		else
+		{
+		    proxy3_setGameObjectTimedCircle(numObjects++, x, y, 6, true);
+		}
+	}
+    // for (float x = 60; x <= 262; x += 32)
+	// {
+    //     y = 10 * cos((x / 320) * 5 * PI) + 160;
+	// 	if(rand() & 2 > 1)
+	// 	{
+	// 		proxy3_setGameObjectTimedValuableCircle(numObjects++, x, y, 6, true);
+	// 	}
+	// 	else
+	// 	{
+	// 	    proxy3_setGameObjectTimedCircle(numObjects++, x, y, 6, true);
+	// 	}
+	// }
+	byte end1 = numObjects - 1;
+
+
+	proxy3_addActor(EventInitLevel, 0xff, 0xff, ActionHideObject, start1, end1, 0xff, 0xff, 0xff);
+	proxy3_addActor(EventCollide, 0xff, t1, ActionDisableCollision, l1, l1, 0xff, 0xff, 0xff);
+	proxy3_addActor(EventSwitchOn, 0xff, t2, ActionEnableCollision, p2, p2, 0xff, 0xff, 0xff);
+	proxy3_addActor(EventSwitchOff, 0xff, t2, ActionDisableCollision, p2, p2, 0xff, 0xff, 0xff);
+	proxy3_addActor(EventSwitchOn, 0xff, t2, ActionDisableCollision, p3, p3, 0xff, 0xff, 0xff);
+	proxy3_addActor(EventSwitchOff, 0xff, t2, ActionEnableCollision, p3, p3, 0xff, 0xff, 0xff);
+	proxy3_addActor(EventCollide, 0xff, t3, ActionShowObject, start1, end1, 0xff, 0xff, 0xff);
+	// proxy3_addActor(EventCollide, 0xff, t1, ActionEnableCollision, p2, p2, 0xff, 0xff, 0xff);
+	// proxy3_addActor(EventCollide, 0xff, t1, ActionDisableCollision, p3, p3, 0xff, 0xff, 0xff);
+
+
+	//proxy3_addActor(EventCollide, 0xff, t3, ActionShowObject, start2, end2, 0xff, 0xff, 0xff);	
 
 
     // Adding large text to announce level start
@@ -7517,9 +7705,10 @@ int main(void)
 	// scoreQueueRear = -1;
 	// bombQueueFront = -1;
 	// bombQueueRear = -1;
-	globalOrientation = ORIENTATION_DOWN;
-	traySprite = 5;
-	posYTray = 229;
+	// globalOrientation = ORIENTATION_DOWN;
+	// gravity = Gravity;
+	// traySprite = 5;
+	// posYTray = 229;
 	//sid.fmodevol = 15;
 	//faceState = FA_WATCH;
 	//faceTimer = 0xff;
@@ -7566,7 +7755,7 @@ int main(void)
 	initStarPolygon_2();
 	eflash.bank = 1;
 	highlight.timer = 0;
-	level = 13;
+	level = 14;
 	//breakMusic = false;
 
 	state = GS_TITLE_INIT;
