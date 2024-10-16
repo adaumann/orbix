@@ -1236,6 +1236,13 @@ __noinline void proxy45_initScene14()
     eflash.bank = 4;
 }
 
+__noinline void proxy45_initScene15()
+{
+    eflash.bank = 5;
+    initScene15_5();
+    eflash.bank = 4;
+}
+
 __noinline void proxy17_copyTitle()
 {
     eflash.bank = 7;
@@ -6342,6 +6349,9 @@ void initScene_4(void)
 	case 14:
 		proxy45_initScene14();
 		break;
+	case 15:
+		proxy45_initScene15();
+		break;
 	default:
 		break;
 	}
@@ -6424,9 +6434,10 @@ void initScene0_4()
 	// proxy3_setGameObjectValueableTimedEdge(numObjects++, 220, 150, 220, 170, 4, true);
 
     byte t1 = numObjects;
-    proxy3_setGameObjectTimedCircle(numObjects++, 70, 30, 6, true);
+    proxy3_setGameObjectTimedDelayedCircle(numObjects++, 70, 30, 6, 0.6, GCOL_YELLOW, PAT_BONUS, true, false, 100);
+
     byte t2 = numObjects;
-    proxy3_setGameObjectTimedCircle(numObjects++, 250, 30, 6, true);
+    proxy3_setGameObjectTimedDelayedCircle(numObjects++, 250, 30, 6, 0.6, GCOL_YELLOW, PAT_BONUS, true, false, 100);
     for(byte i = 0; i < 6; i++)
     {
         float xa1e = x1e + 19;
@@ -7545,7 +7556,7 @@ void initScene14_5()
 
     proxy3_setGameObjectCannon(numObjects++, 40, 32, 16, ORIENTATION_RIGHT, GCOL_DARK_GREY, false, true);
     // Cannon setup
-    proxy3_setGameObjectBall(numObjects++, 160, 22, 0, 0, 4, 0, true, true, VCOL_WHITE);
+    proxy3_setGameObjectBall(numObjects++, 40, 40, 0, 0, 4, 0, true, true, VCOL_WHITE);
     proxy3_setGameObjectImage(numObjects++, IMG_LANDSCAPE2, 0, 22, 40, 3, true, GCOL_DARK_GREY, true);
 
     proxy3_setGameObjectLaser(numObjects++, 0, 64, 270, 64, GCOL_YELLOW, true);
@@ -7632,6 +7643,82 @@ void initScene14_5()
 
     proxy3_setGameObjectLargeText(numObjects++, 8, true, ORIENTATION_LEFT, 0, GCOL_WHITE);
 
+}
+
+void initScene15_5()
+{
+    registerCallBank(5);
+    balls = 12; // Number of balls for this level
+
+    proxy3_setGameObjectBall(numObjects++, 160, 22, 0, 0, 4, 0, true, true, VCOL_WHITE);
+    proxy3_setGameObjectCannon(numObjects++, 160, 18, 18, ORIENTATION_DOWN, GCOL_DARK_GREY, true, true);
+    proxy3_setGameObjectImage(numObjects++, IMG_LANDSCAPE3, 0, 22, 40, 3, true, GCOL_DARK_GREY, true);
+
+	int x = 6;
+    float y = (cos(((x - 160) * 0.011) * (x - 160) * 0.011) + 1.5) * 70;
+    int xa = x;
+    float ya = y; 
+
+    byte start1 = numObjects;
+    for (byte i = 0; i < 12; i++)
+    {
+        x += 320 / 12;
+
+        y = (cos(((x - 160) * 0.011) * (x - 160) * 0.011) + 1.5) * 70;
+
+		if(rand() % 2 > 0)
+		{
+			proxy3_setGameObjectValueableTimedEdge(numObjects++, x, y, xa, ya, 3, true);     
+		}
+		else
+		{
+			proxy3_setGameObjectTimedEdge(numObjects++, x, y, xa, ya, 3, true);			
+		}
+        xa = x;
+        ya = y;
+
+	}
+
+	y = 50;
+	for (byte i = 0; i < 5; i ++)
+	{
+		x = 20;
+		for (byte j = 0; j < 8; j ++)
+		{
+			if((i == 1 || i == 2) && (j == 0 || j == 7) ||
+				(i == 3 && ( j < 2 || j > 5)) ||
+				(i == 4 && ( j < 3 || j > 4)) )
+			{
+			}
+			else
+			{
+				byte r = rand() % 10;
+
+				if ( r == 1)
+				{
+	                proxy3_setGameObjectTimedBonusScoreCircle(numObjects++, x, y, 6, true);
+				}
+				else if(r > 5)
+				{
+					proxy3_setGameObjectTimedValuableCircle(numObjects++, x, y, 6, true);
+				}
+				else
+				{
+					proxy3_setGameObjectTimedCircle(numObjects++, x, y, 6, true);
+				}
+			}
+			x += 40;
+		}
+		y += 25;
+	}
+
+
+
+    // Adding large text to announce level start
+    largeTextId = numObjects;
+    largeTextTimer = LARGE_TEXT_TIMER;
+
+    proxy3_setGameObjectLargeText(numObjects++, 8, true, ORIENTATION_LEFT, 0, GCOL_WHITE);
 }
 
 
@@ -7755,7 +7842,7 @@ int main(void)
 	initStarPolygon_2();
 	eflash.bank = 1;
 	highlight.timer = 0;
-	level = 14;
+	level = 15;
 	//breakMusic = false;
 
 	state = GS_TITLE_INIT;
