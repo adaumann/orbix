@@ -299,6 +299,8 @@ void initScene12_5();
 void initScene13_5();
 void initScene14_5();
 void initScene15_5();
+void initScene16_5();
+void initScene17_5();
 
 
 // proxy

@@ -410,7 +410,7 @@ RIRQCode bottom, top, rmenu;
 
 
 #define MaxObjects 64
-#define MaxLevels 15
+#define MaxLevels 18
 #define MaxScoreDisplay 16
 #define MaxBombDisplay 16
 #define MaxActors 16
@@ -1242,6 +1242,22 @@ __noinline void proxy45_initScene15()
     initScene15_5();
     eflash.bank = 4;
 }
+
+__noinline void proxy45_initScene16()
+{
+    eflash.bank = 5;
+    initScene16_5();
+    eflash.bank = 4;
+}
+
+__noinline void proxy45_initScene17()
+{
+    eflash.bank = 5;
+    initScene17_5();
+    eflash.bank = 4;
+}
+
+
 
 __noinline void proxy17_copyTitle()
 {
@@ -2231,21 +2247,21 @@ void gameLoop_1()
 	else if (state == GS_SIMULATE)
 	{
 		currentValueableObjects = 0xff;
-		updateRender_1(mainBall, false);
+//		updateRender_1(mainBall, false);
 		byte endSim = proxy13_simulatePhysics(mainBall);
 		updateCollisions_1();
 		simSteps++;
-		if(endSim == SIM_CHANGE || simSteps > 63)
+		if(endSim == SIM_CHANGE )
 		{
 			state = GS_SIMULATE_FINISH;
 		}
-		if(endSim == SIM_END)
+		if(endSim != SIM_DONE)
+		{
+			updateRender_1(mainBall, false);
+		}
+		if(endSim == SIM_END || simSteps > 63)
 		{
 			simDone = true;
-		}
-		if(endSim == SIM_FIRE)
-		{
-
 		}
 	}
 	else if( state == GS_SIMULATE_FINISH)
@@ -2548,7 +2564,7 @@ void updateRender_1(byte id, bool init)
 	{
 		if(!(state == GS_FIRE && id == mainBall))
 		{
-			if(state == GS_SIMULATE)
+			if(state == GS_SIMULATE || state == GS_SIMULATE_FINISH)
 			{
 				int px = (int)go->px * 64;
 				int py = (int)go->py * 64;
@@ -3821,13 +3837,13 @@ void updateCannon_2(byte id)
 			}
 			if(joyy[0] != 0)
 			{
-				doSim = true;
 				simLeftRight = false;
 			}
 		}
 		else
 		{
 			go->cannonVector.v[1] = 0;
+			currentAngleStep = 0;
 		}
 		break;
 	case ORIENTATION_UP:
@@ -3843,7 +3859,6 @@ void updateCannon_2(byte id)
 			}
 			if(joyy[0] != 0)
 			{
-				doSim = true;
 				simLeftRight = false;
 			}
 		}
@@ -3898,7 +3913,9 @@ void updateCannon_2(byte id)
 		}
 		break;
 	}
-	if(doSim)
+	vec2_rotate_2(&(go->cannonVector), currentAngleStep, go->radius);
+	bool fire = joyb[0];
+	if(!fire)
 	{
 		proxy23_saveSimulationStart(mainBall);			
 		struct GameObject *goBall;
@@ -3909,7 +3926,21 @@ void updateCannon_2(byte id)
 		goBall->vy = go->cannonVector.v[1] * CannonPower;
 		state = GS_SIMULATE;			
 	}
+	else
+	{
+		struct GameObject *goBall;
+		goBall = &gameObjects[mainBall];
+		playSfx(SND_SHOOT);
+		dispatchEvent_2(EventShootBall, mainBall, 0xff, 0xff);
 
+		goBall->px = go->px + go->cannonVector.v[0] * 1.8;
+		goBall->py = go->py + go->cannonVector.v[1] * 1.8;
+		goBall->vx = go->cannonVector.v[0] * CannonPower;
+		goBall->vy = go->cannonVector.v[1] * CannonPower;
+		state = GS_RUN;
+	}
+
+	proxy21_updateRender(id, false);
 	if(id == mainCannon)
 	{
 		if(go->cannonVector.v[0] > 5)
@@ -3924,22 +3955,6 @@ void updateCannon_2(byte id)
 		{
 			ballSide = 0;
 		}
-
-	}
-	proxy21_updateRender(id, false);
-	vec2_rotate_2(&(go->cannonVector), currentAngleStep, go->radius);
-	if (joyb[0])
-	{
-		struct GameObject *goBall;
-		goBall = &gameObjects[mainBall];
-		playSfx(SND_SHOOT);
-		dispatchEvent_2(EventShootBall, mainBall, 0xff, 0xff);
-
-		goBall->px = go->px + go->cannonVector.v[0] * 1.8;
-		goBall->py = go->py + go->cannonVector.v[1] * 1.8;
-		goBall->vx = go->cannonVector.v[0] * CannonPower;
-		goBall->vy = go->cannonVector.v[1] * CannonPower;
-		state = GS_RUN;
 	}
 }
 
@@ -5263,7 +5278,7 @@ byte simulatePhysics_3(byte id)
 	}
 	if(simDone)
 	{
-		return SIM_CHANGE;
+		return SIM_DONE;
 	}
 
 	if(hasSimHit == true)
@@ -5286,7 +5301,6 @@ byte simulatePhysics_3(byte id)
 
 	go->boundingBox = getBoundingBoxCircle_3(go->px, go->py, 4,8);
 
-	// Crudely wrap go->s to screen - note this cause issues when collisions occur on screen boundaries
 	if (go->px < 6 || go->px >= ScreenWidth - 6)
 	{
 		hasSimHit = true;
@@ -6351,6 +6365,12 @@ void initScene_4(void)
 		break;
 	case 15:
 		proxy45_initScene15();
+		break;
+	case 16:
+		proxy45_initScene16();
+		break;
+	case 17:
+		proxy45_initScene17();
 		break;
 	default:
 		break;
@@ -7648,7 +7668,7 @@ void initScene14_5()
 void initScene15_5()
 {
     registerCallBank(5);
-    balls = 12; // Number of balls for this level
+    balls = 8; // Number of balls for this level
 
     proxy3_setGameObjectBall(numObjects++, 160, 22, 0, 0, 4, 0, true, true, VCOL_WHITE);
     proxy3_setGameObjectCannon(numObjects++, 160, 18, 18, ORIENTATION_DOWN, GCOL_DARK_GREY, true, true);
@@ -7712,6 +7732,67 @@ void initScene15_5()
 		y += 25;
 	}
 
+    // Adding large text to announce level start
+    largeTextId = numObjects;
+    largeTextTimer = LARGE_TEXT_TIMER;
+
+    proxy3_setGameObjectLargeText(numObjects++, 8, true, ORIENTATION_LEFT, 0, GCOL_WHITE);
+}
+
+void initScene16_5()
+{
+    registerCallBank(5);
+    balls = 8; // Number of balls for this level
+
+    proxy3_setGameObjectBall(numObjects++, 160, 22, 0, 0, 4, 0, true, true, VCOL_WHITE);
+    proxy3_setGameObjectCannon(numObjects++, 160, 18, 18, ORIENTATION_DOWN, GCOL_DARK_GREY, true, true);
+    proxy3_setGameObjectImage(numObjects++, IMG_LANDSCAPE3, 0, 22, 40, 3, true, GCOL_DARK_GREY, true);
+
+	const int size=24;
+    float a = 18; // Amplitude8
+    float k = 4.0; // Anzahl der Blütenblätter
+    float theta;
+    float x,y,r,xa,ya;
+	byte p1=0;
+	byte p2=0; 
+
+   	proxy3_setGameObjectPortal(numObjects++, 165, 95, 8, true);
+   	proxy3_setGameObjectPortal(numObjects++, 210, 20, 8, true);
+
+	theta = 7 * ( 3 * PI / size);
+	r = a * theta / 2.6;
+	xa = 160 + r * cos(theta);
+	ya = 102 + r * 0.7 * sin(theta);
+	byte l=0;
+ 
+	for (byte i = 8; i < 44; i++)
+	{
+		theta = (i) * ( 3 * PI / size);
+		r = a * theta / 2.6;
+		x = 160 + r * cos(theta);
+		y = 102 + r * 0.7 * sin(theta);
+		byte r = rand() % 10;
+
+		if ( r == 1)
+		{
+            proxy3_setGameObjectWallEdge(numObjects++, x, y, xa, ya, 5, 0.3, GCOL_RED, true);
+		}
+		else if(r > 5)
+		{
+			proxy3_setGameObjectValueableTimedEdge(numObjects++, x, y, xa, ya, 5, true);
+		}
+		else
+		{
+			proxy3_setGameObjectTimedEdge(numObjects++, x, y, xa, ya, 5, true);
+
+		}
+
+
+
+		// proxy3_setGameObjectValueableTimedEdge(numObjects++, x, y, xa, ya, 5, true);
+		xa = x;
+		ya = y;
+	}
 
 
     // Adding large text to announce level start
@@ -7720,6 +7801,111 @@ void initScene15_5()
 
     proxy3_setGameObjectLargeText(numObjects++, 8, true, ORIENTATION_LEFT, 0, GCOL_WHITE);
 }
+
+void initScene17_5()
+{
+    registerCallBank(5);
+    balls = 12; // Number of balls for this level
+
+
+    proxy3_setGameObjectBall(numObjects++, 160, 22, 0, 0, 4, 0, true, true, VCOL_WHITE);
+    proxy3_setGameObjectCannon(numObjects++, 160, 18, 18, ORIENTATION_DOWN, GCOL_DARK_GREY, true, true);
+	proxy3_setGameObjectImage(numObjects++, IMG_VALLEYL, 0, 20, 11, 5, true, GCOL_DARK_GREY, true);
+	proxy3_setGameObjectImage(numObjects++, IMG_VALLEYR, 29, 20, 11, 5, true, GCOL_DARK_GREY, true);
+
+	const int size=48;
+	float s = 62;
+    float a = 4; // Amplitude8
+    float b = 1; // Anzahl der Blütenblätter
+    float theta;
+    float x,y,r,xa,ya;
+	byte p1=0;
+	byte p2=0; 
+	bombDistance = 40;
+
+	theta = 0 * ( 2 * PI / size);
+	r = s * sin((a/b)*theta);
+	xa = 160 + r * cos(theta);
+	ya = 110 + r * sin(theta);
+	byte l=0;
+ 
+	for (byte i = 0; i < 48; i++)
+	{
+		theta = (i) * ( 2 * PI / size);
+		r = s * sin((a/b)*theta);
+		x = 160 + r * cos(theta);
+		y = 110 + r * sin(theta);
+
+		if(!(abs(x - 160) < 1 && abs(y - 110) < 1))
+		{
+			byte r = rand() % 10;
+
+			if ( r == 1)
+			{
+				proxy3_setGameObjectTimedBonusScoreCircle(numObjects++, x, y, 6, true);
+			}
+			else if(r > 5)
+			{
+				proxy3_setGameObjectTimedValuableCircle(numObjects++, x, y, 6, true);
+			}
+			else
+			{
+				proxy3_setGameObjectTimedCircle(numObjects++, x, y, 6, true);
+			}
+		}
+
+		// // if(i % 2 == 0)
+		// // {
+		// // 	proxy3_setGameObjectTimedValuableCircle(numObjects++, x, y, 3, true);
+		// if ( r == 1)
+		// {
+
+		// 	proxy3_setGameObjectWallEdge(numObjects++, x, y, xa, ya, 5, 0.3, GCOL_RED, true);
+		// }
+		// else if(r > 5)
+		// {
+		// 	proxy3_setGameObjectValueableTimedEdge(numObjects++, x, y, xa, ya, 5, true);
+		// }
+		// else
+		// {
+		// 	proxy3_setGameObjectTimedEdge(numObjects++, x, y, xa, ya, 5, true);
+
+		// }
+
+		// proxy3_setGameObjectValueableTimedEdge(numObjects++, x, y, xa, ya, 5, true);
+		xa = x;
+		ya = y;
+
+	}
+
+	float step = 0;
+	 xa = 82 * sin(step) + 160;
+	 ya = 82 * cos(step) + 110;
+	for (byte i = 0; i < 12; i++)
+	{
+		step += 30 * PI / 180;
+
+		 x = 82 * sin(step) + 160;
+		 y = 82 * cos(step) + 110;
+
+		if (!(i == 0 || i == 11 || i == 5 || i == 6))
+		{
+			proxy3_setGameObjectValueableCrackEdge(numObjects++, x, y, xa, ya, 4);
+		}
+		xa = x;
+		ya = y;
+	}	
+
+	proxy3_setGameObjectBombCircle(numObjects++, 160,110, 20, 0.8, GCOL_LT_RED);
+
+
+    // Adding large text to announce level start
+    largeTextId = numObjects;
+    largeTextTimer = LARGE_TEXT_TIMER;
+
+    proxy3_setGameObjectLargeText(numObjects++, 8, true, ORIENTATION_LEFT, 0, GCOL_WHITE);
+}
+
 
 
 #pragma code(code)
@@ -7842,7 +8028,7 @@ int main(void)
 	initStarPolygon_2();
 	eflash.bank = 1;
 	highlight.timer = 0;
-	level = 15;
+	level = 17;
 	//breakMusic = false;
 
 	state = GS_TITLE_INIT;
