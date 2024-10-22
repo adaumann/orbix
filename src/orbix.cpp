@@ -194,13 +194,13 @@ __export char MusicInGame[] = {
 #pragma data(musicbg)
 
 __export char MusicBackground1[] = {
-#embed 2048 0x7e "../resources/orbix_background1_c0.sid"
+#embed 2048 0x7e "../resources/orbix_background_c0.sid"
 };
 
 #pragma data(musicbg2)
 
 __export char MusicBackground2[] = {
-#embed 2048 0x7e "../resources/orbix_background2_c0.sid"
+#embed 2048 0x7e "../resources/orbix_background_c0.sid"
 };
 
 
@@ -1573,7 +1573,7 @@ void playSfx(byte num)
 	{
 		bumptimer = 10;
 	}
-	
+
 	__asm
 	{
         lda num
@@ -1631,6 +1631,7 @@ void music_play(void)
 
 void music_ff(void)
 {
+	return;
 	__asm
 	{
 		lda	#$0
@@ -1648,6 +1649,7 @@ void music_ff(void)
 	}
 	spr_show(0, true);
 	isMusicFf = false;
+
 	__asm
 	{
 		lda	#$0f
@@ -2057,7 +2059,7 @@ void frameLoop_1()
 	char authorTxt[] = "code: andy daumann";
 	char author2Txt[] = "music: picrard";
 	// char scoreTxt[] = "Score:";
-	// char hiscoreTxt[] = "Hiscore:";
+	char hiscoreTxt[] = " Hiscore: ";
 
 	char titleTxt[] = "ORBIX";
 
@@ -2097,14 +2099,15 @@ void frameLoop_1()
 		{
 			char subH[20];
 
-			// strcpy(subH, hiscoreTxt);
-			// strcat(subH, hiscore);
+			strcpy(subH, hiscoreTxt);
+			strcat(subH, hiscore);
+			strcat(subH, " ");
 			//proxy0_put_string(&Screen, &scr, 118, 144, scoreTxt, BLTOP_COPY);
 			// proxy0_bm_rect_fill(&Screen, &scr, 96, 64, 128, 24);
 			// proxy0_bm_rect_clear(&Screen, &scr, 97, 65, 126, 23);
 			// colorAreaUnclipped(12,8,16,8,0x10, true);
-			// proxy0_put_string(&Screen, &scr, 96, 168, subH, BLTOP_COPY);
-			//colorAreaUnclipped(12,22,12,1,0xf1, true);
+			proxy0_put_string(&Screen, &scr, 120, 80, subH, BLTOP_COPY);
+			colorAreaUnclipped(15,10,11,1,0x50, true);
 			proxy0_put_string(&Screen, &scr, 118, 176, sub, BLTOP_COPY);
 			colorAreaUnclipped(14,22,12,1,0xf1, true);
 			titlePhase = 2;
@@ -2141,9 +2144,7 @@ void frameLoop_1()
 	{
 		if(joyb[0] && menuItem <= 1)
 		{
-			state = GS_GAME_INIT;
-			// TODO
-			//state = GS_TITLE_FADE_OUT;
+			state = GS_TITLE_FADE_OUT;
 		}
 		if(joyb[0] && menuItem == 2)
 		{
@@ -2926,8 +2927,8 @@ void handleDelete_1(byte id)
 
 	if (IsBitSet(go->comp1, Component1_TimedDelete))
 	{
-		// if (!proxy12_collideQueue_isQueued(id))
-		// {
+		if (!proxy12_collideQueue_isQueued(id))
+		{
 			if(valueableObjects == 1 && IsBitSet(go->comp1, Component1_Valueable))
 			{
 				completed = true;
@@ -2941,7 +2942,7 @@ void handleDelete_1(byte id)
 				go->comp3 |= Component3_Exploded;
 				proxy12_colorBoundingBox(id);
 			}
-//		}
+		}
 	}
 
 	if (IsBitSet(go->comp1, Component1_CrackDelete))
@@ -5430,7 +5431,7 @@ byte simulatePhysics_3(byte id)
 		go->py = ScreenHeight;
 		go->vy = -go->vy;
 	}
-	if ((globalOrientation == ORIENTATION_DOWN && go->py > ScreenHeight - 8) || (globalOrientation == ORIENTATION_UP && go->py < 16))
+	if ((globalOrientation == ORIENTATION_DOWN && go->py > ScreenHeight - 12) || (globalOrientation == ORIENTATION_UP && go->py < 20))
 	{
 		return SIM_END;
 	}
@@ -6840,11 +6841,11 @@ void initScene3_4()
     }
 
     byte trigger1 = numObjects;
-    proxy3_setGameObjectBumpCircle(numObjects++, 70 + 4, 80 + 4, 12, 0.8, GCOL_MED_GREY);
+    proxy3_setGameObjectBumpCircle(numObjects++, 70 + 4, 80 + 4, 12, 1.5, GCOL_MED_GREY);
     byte trigger2 = numObjects;
-    proxy3_setGameObjectBumpCircle(numObjects++, 250 + 4, 80 + 4, 12, 0.8, GCOL_MED_GREY);
+    proxy3_setGameObjectBumpCircle(numObjects++, 250 + 4, 80 + 4, 12, 1.5, GCOL_MED_GREY);
     byte trigger3 = numObjects;
-    proxy3_setGameObjectBumpCircle(numObjects++, 160 + 4, 140 + 4, 12, 0.8, GCOL_MED_GREY);
+    proxy3_setGameObjectBumpCircle(numObjects++, 160 + 4, 140 + 4, 12, 1.5, GCOL_MED_GREY);
 
     byte startg1 = numObjects;
     proxy3_setGameObjectPortal(numObjects++, 92, 40, 8, false);    
@@ -7003,7 +7004,7 @@ void initScene6_4()
             byte i = (col * 4) + row;
 
             arraySwitches[i] = numObjects;
-            proxy3_setGameObjectSwitchCircle(numObjects++, x, y, 9, 0.8, GCOL_YELLOW, false);
+            proxy3_setGameObjectSwitchCircle(numObjects++, x, y, 9, 1.2, GCOL_YELLOW, false);
             if (col < 2 && row < 2)
             {
                 proxy3_setGameObjectTimedValuableCircle(numObjects++, x + 40, y + 25, 5, true);
@@ -7241,13 +7242,9 @@ void initScene9_4()
 {
 	registerCallBank(4);
     balls = 12;
-	timeElapsing = TimeElapsingFast;
 	byte ballId = numObjects;
     proxy3_setGameObjectBall(numObjects++, 160, 22, 0, 0, 6, 0, true, true, VCOL_WHITE);
     proxy3_setGameObjectCannon(numObjects++, 160, 18, 18, ORIENTATION_DOWN, GCOL_DARK_GREY, true, true);
-    byte targetId = numObjects;
-    proxy3_setGameObjectBall(numObjects++, 80, 100, 0, 0, 6, 1, false, false, VCOL_LT_GREEN);
-
 
 	float ya = 56;
 	float y = 56;
@@ -7292,8 +7289,11 @@ void initScene9_4()
 		}
 		if( y != 152)
 		{
-			proxy3_setGameObjectWallEdge(numObjects++, 160 - x, y, 160 - xa, ya, 4, 0.3, GCOL_RED, true);
-			proxy3_setGameObjectWallEdge(numObjects++, 320 - (160 - x), y, 320 - (160 - xa), ya, 4, 0.3, GCOL_RED, true);
+			if(y <= 152 - 48)
+			{
+				proxy3_setGameObjectWallEdge(numObjects++, 160 - x, y, 160 - xa, ya, 4, 0.3, GCOL_RED, true);
+				proxy3_setGameObjectWallEdge(numObjects++, 320 - (160 - x), y, 320 - (160 - xa), ya, 4, 0.3, GCOL_RED, true);
+			}
 			if(y != 72 && y != 152 - 16)
 			{
 				proxy3_setGameObjectValuableCrackCircle(numObjects++, (160 - x)  - 11, y, 4);
@@ -7304,9 +7304,8 @@ void initScene9_4()
         ya = y;
 	}
 
-    byte sourceId = numObjects;
-    proxy3_setGameObjectActivateBallCircle(numObjects++, 80, 100, 7, 0.6, GCOL_WHITE);
-    proxy3_addDepObject(sourceId, targetId);
+	proxy3_setGameObjectBumpCircle(numObjects++, 80, 120, 6, 1.5, GCOL_LT_BLUE);
+	proxy3_setGameObjectBumpCircle(numObjects++, 320-80, 120, 6, 1.5, GCOL_LT_BLUE);
 
 	proxy3_setGameObjectTimedValuableCircle(numObjects++, 160, 90, 6, true);
 	proxy3_setGameObjectTimedValuableCircle(numObjects++, 160, 100, 6, true);
@@ -7314,17 +7313,18 @@ void initScene9_4()
 
 	proxy3_setGameObjectPortal(numObjects++, 55, 137, 8, true);
 	proxy3_setGameObjectPortal(numObjects++, 223, 73, 8, true);
-	proxy3_setGameObjectBumpCircle(numObjects++, 320-80, 105, 8, 1.5, GCOL_LT_BLUE);
+    proxy3_setGameObjectKillCircle(numObjects++, 320-55, 137, 8, GCOL_LT_RED); 
+    proxy3_setGameObjectKillCircle(numObjects++, 320-223, 73, 8, GCOL_LT_RED);
 
 
-    proxy3_setGameObjectCircleOrientation(numObjects++, 35, 100, 8, ORIENTATION_DOWN, GCOL_RED, PAT_ARROW_DOWN, 0);
-    proxy3_setGameObjectCircleOrientation(numObjects++, 320 - 35, 100, 8, ORIENTATION_UP, GCOL_RED, PAT_ARROW_UP, 0);
-    proxy3_setGameObjectCircleOrientation(numObjects++, 130, 100, 8, ORIENTATION_UP, GCOL_RED, PAT_ARROW_UP, 0);
-    proxy3_setGameObjectCircleOrientation(numObjects++, 320 - 130, 100, 8, ORIENTATION_DOWN, GCOL_RED, PAT_ARROW_DOWN, 0);
-
-
-    proxy3_addActor(EventShootBall, 0xff, ballId, ActionActivateBall, sourceId, 0xff, 0xff, 0xff, 0xff);
-    proxy3_addActor(EventKillBall, 0xff, ballId, ActionKillBall, targetId, 0xff, 0xff, 0xff, 0xff);
+    proxy3_setGameObjectCircleOrientation(numObjects++, 10, 100, 8, ORIENTATION_DOWN, GCOL_RED, PAT_ARROW_DOWN, 0);
+    proxy3_setGameObjectCircleOrientation(numObjects++, 320 - 10, 100, 8, ORIENTATION_UP, GCOL_RED, PAT_ARROW_UP, 0);
+	proxy3_setGameObjectBumpCircle(numObjects++, 130, 100, 8, 1.5, GCOL_LT_BLUE);
+	proxy3_setGameObjectBumpCircle(numObjects++, 320-130, 100, 8, 1.5, GCOL_LT_BLUE);
+	proxy3_setGameObjectBumpCircle(numObjects++, 150, 132, 5, 1.5, GCOL_CYAN);
+	proxy3_setGameObjectBumpCircle(numObjects++, 170, 132, 5, 1.5, GCOL_CYAN);
+    // proxy3_setGameObjectCircleOrientation(numObjects++, 130, 100, 8, ORIENTATION_UP, GCOL_RED, PAT_ARROW_UP, 0);
+    // proxy3_setGameObjectCircleOrientation(numObjects++, 320 - 130, 100, 8, ORIENTATION_DOWN, GCOL_RED, PAT_ARROW_DOWN, 0);
 
     // Adding large text
     largeTextId = numObjects;
@@ -7589,7 +7589,7 @@ void initScene12_5()
 		}
 
 		byte p3 = numObjects;
-		proxy3_setGameObjectSwitchCircle(numObjects++, 90, 100, 12, 0.8, GCOL_YELLOW, false);
+		proxy3_setGameObjectSwitchCircle(numObjects++, 90, 100, 12, 1.2, GCOL_YELLOW, false);
 	
 	    proxy3_addActor(EventSwitchOn, 0xff, p3, ActionEnableCollision, p1, p1, 0xff, 0xff, 0xff);
 	    proxy3_addActor(EventSwitchOn, 0xff, p3, ActionDisableCollision, p2, p2, 0xff, 0xff, 0xff);
@@ -7883,7 +7883,7 @@ void initScene16_5()
 	proxy3_setGameObjectImage(numObjects++, IMG_ALIEN2, 33, 10, 7, 12, true, GCOL_LT_RED, true);
 
 	const int size=24;
-    float a = 18; // Amplitude8
+    float a = 19; // Amplitude8
     float k = 4.0; // Anzahl der Blütenblätter
     float theta;
     float x,y,r,xa,ya;
@@ -8129,7 +8129,7 @@ void initScene19_5()
     proxy3_setGameObjectCannon(numObjects++, 320-12, 188, 12, ORIENTATION_UP, GCOL_MED_GREY, false, false);
 
     float x,y,xa,ya;
-	byte t1, t2;
+	byte t1 = 0xff, t2 = 0xff;
 
 	for(byte i = 0; i < 5; i++)
 	{
@@ -8289,22 +8289,7 @@ int main(void)
 	// Disable CIA interrupts, we do not want interference
 	// with our joystick interrupt
 	cia_init();
-	// timer = 0;
-	// collideQueueFront = -1;
-	// collideQueueRear = -1;
-	// scoreQueueFront = -1;
-	// scoreQueueRear = -1;
-	// bombQueueFront = -1;
-	// bombQueueRear = -1;
-	// globalOrientation = ORIENTATION_DOWN;
-	// gravity = Gravity;
-	// traySprite = 5;
-	// posYTray = 229;
-	//sid.fmodevol = 15;
-	//faceState = FA_WATCH;
-	//faceTimer = 0xff;
-	//ballSide = 0;
-	//bumptimer = 0;
+	sid.fmodevol = 15;
 
 	// Copy assets
 
@@ -8334,7 +8319,6 @@ int main(void)
 	proxy0_spr_set(7, true, 160 + 23, posYTray, 64 + traySprite + 1, VCOL_WHITE, false, true, false);
 
 	mmap_set(MMAP_ROM);
-//	string_write_2(0, 0, scoreTxt, VCOL_WHITE);
 
 	// Screen color to black
 	vic.color_border = VCOL_BLACK;
@@ -8346,8 +8330,7 @@ int main(void)
 	initStarPolygon_2();
 	eflash.bank = 1;
 	highlight.timer = 0;
-	level = 19;
-	//breakMusic = false;
+	level = 0;
 
 	state = GS_TITLE_INIT;
  
