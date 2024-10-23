@@ -194,13 +194,13 @@ __export char MusicInGame[] = {
 #pragma data(musicbg)
 
 __export char MusicBackground1[] = {
-#embed 2048 0x7e "../resources/orbix_background_c0.sid"
+#embed 2048 0x7e "../resources/orbix_background1_c0.sid"
 };
 
 #pragma data(musicbg2)
 
 __export char MusicBackground2[] = {
-#embed 2048 0x7e "../resources/orbix_background_c0.sid"
+#embed 2048 0x7e "../resources/orbix_background2_c0.sid"
 };
 
 
@@ -535,6 +535,7 @@ int gravity;
 bool isGravCannon;
 signed int moveCannonCount;
 bool isMusicFf;
+bool isMusic;
 
 // Heads of used and free list
 Particle	*	pfirst, * pfree;
@@ -757,7 +758,7 @@ __noinline void proxy0_put_score(int x, int y, signed int score)
 	//rirq_wait();
 	mmap_set(MMAP_RAM);
 	char buffer[10];
-	itoa(score, buffer, 10);
+	utoa(score, buffer, 10);
 
 	bm_put_string(&Screen, &scr, x - strlen(buffer) * 6, y - 12, buffer, BLTOP_XOR);
 	mmap_set(MMAP_ROM);
@@ -1615,6 +1616,11 @@ void music_play(void)
 		return;
 	}
 
+	if(!isMusic && !playTunes)
+	{
+		return;
+	}
+
 	__asm
 	{
 		jsr		$c003
@@ -2044,10 +2050,26 @@ void gameLoopLevelInit()
 
 void paintLevMenu_1()
 {
-	char buffer [3];
-	itoa (level + 1,buffer,10);	
-	proxy0_bm_rect_clear(&Screen, &scr, 160 + (70 / 2), 104, 16, 8);
-	proxy0_put_string(&Screen, &scr, 160 + (70 / 2), 104, buffer, BLTOP_COPY);
+	char buffer [3] = "\0\0\0";
+	proxy0_bm_rect_clear(&Screen, &scr, 195, 96, 16, 8);
+	proxy0_put_string(&Screen, &scr, 195, 96, buffer, BLTOP_COPY);
+	utoa (level + 1,buffer,10);	
+	proxy0_put_string(&Screen, &scr, 195, 96, buffer, BLTOP_COPY);
+}
+
+void paintMusicItem_1()
+{
+	proxy0_bm_rect_clear(&Screen, &scr, 160 + (30 / 2), 104, 16, 8);
+	if(isMusic)
+	{
+		char buffer [3] = "On\0";
+		proxy0_put_string(&Screen, &scr, 175, 104, buffer, BLTOP_COPY);
+	}
+	else
+	{
+		char buffer [4] = "Off\0";
+		proxy0_put_string(&Screen, &scr, 175, 104, buffer, BLTOP_COPY);
+	}
 }
 
 void frameLoop_1()
@@ -2055,6 +2077,7 @@ void frameLoop_1()
 	char sub[] = "Press FIRE to start";
 	char startTxt[] = "Start Game";
 	char levelTxt[] = "Starting Level: ";
+	char musicTxt[] = "Music: ";
 	char backTxt[] = "Back";
 	char authorTxt[] = "code: andy daumann";
 	char author2Txt[] = "music: picrard";
@@ -2070,6 +2093,7 @@ void frameLoop_1()
 		rirq_stop();
 		proxy17_copyTitle();
 		proxy_memcpy(8, 1, Buffer, Music, 0xF00);
+		playTunes = true;
 		playSubtune(0);
 		rasterMenuInit(true);
 
@@ -2130,13 +2154,15 @@ void frameLoop_1()
 		proxy0_put_string(&Screen, &scr, 1, 192, authorTxt, BLTOP_COPY);
 		proxy0_put_string(&Screen, &scr, 258, 192, author2Txt, BLTOP_COPY);
 		colorAreaUnclipped(0,24,40,1,0xe1, true);
-		proxy0_put_string(&Screen, &scr, 160 - (30 / 2), 72, titleTxt, BLTOP_COPY);
-		proxy0_put_string(&Screen, &scr, 160 - (50 / 2), 96, startTxt, BLTOP_COPY);
-		proxy0_put_string(&Screen, &scr, 160 - (70 / 2), 104, levelTxt, BLTOP_COPY);
+//		proxy0_put_string(&Screen, &scr, 160 - (22 / 2), 68, titleTxt, BLTOP_COPY);
+		proxy0_put_string(&Screen, &scr, 160 - (50 / 2), 88, startTxt, BLTOP_COPY);
+		proxy0_put_string(&Screen, &scr, 160 - (70 / 2), 96, levelTxt, BLTOP_COPY);
+		proxy0_put_string(&Screen, &scr, 160 - (30 / 2), 104, musicTxt, BLTOP_COPY);
 		proxy0_put_string(&Screen, &scr, 160 - (20 / 2), 112, backTxt, BLTOP_COPY);
 		menuItem = 0;
-		proxy12_startHighlight(13,12, 14, 1, true, GCOL_WHITE);
+		proxy12_startHighlight(14, 11, 13, 1, true, GCOL_WHITE);
 		paintLevMenu_1();
+		paintMusicItem_1();		
 
 		state = GS_MENU;
 	}
@@ -2146,21 +2172,21 @@ void frameLoop_1()
 		{
 			state = GS_TITLE_FADE_OUT;
 		}
-		if(joyb[0] && menuItem == 2)
+		if(joyb[0] && menuItem == 3)
 		{
 			state = GS_TITLE_INIT;
 		}
-		if(joyy[0] > 0 && menuItem <= 1 && timer % 8 == 0)
+		if(joyy[0] > 0 && menuItem <= 2 && timer % 8 == 0)
 		{
 			colorAreaUnclipped(12,8,16,8,0x10, true);
 			menuItem++;
-			proxy12_startHighlight(13,12 + menuItem, 14, 1, true, GCOL_WHITE);
+			proxy12_startHighlight(13,11 + menuItem, 14, 1, true, GCOL_WHITE);
 		}
 		if(joyy[0] < 0 && menuItem >= 1 && timer % 8 == 0)
 		{
 			colorAreaUnclipped(12,8,16,8,0x10,true);
 			menuItem--;
-			proxy12_startHighlight(13,12 + menuItem, 14, 1, true, GCOL_WHITE);
+			proxy12_startHighlight(13,11 + menuItem, 14, 1, true, GCOL_WHITE);
 		}
 
 		if(joyx[0] < 0 && menuItem == 1 && timer % 8 == 0)
@@ -2173,6 +2199,12 @@ void frameLoop_1()
 		{
 			proxy12_incLevel(false);
 			paintLevMenu_1();
+		}
+		if(joyx[0] != 0 && menuItem == 2 && timer % 8 == 0)
+		{
+			isMusic = !isMusic;
+			paintMusicItem_1();
+	
 		}
 		
 	}
@@ -3648,7 +3680,7 @@ void printLargeString_2(char cy, const char *s, bool withRoundScore, bool withLe
 	{
 		char sub[20];
 		char buf1[3];
-		itoa(level + 1, buf1, 10);
+		utoa(level + 1, buf1, 10);
 		strcpy(sub, "Level: ");
 		strcat(sub, buf1);
 
@@ -3660,11 +3692,11 @@ void printLargeString_2(char cy, const char *s, bool withRoundScore, bool withLe
 	{
 		char sub[40];
 		char buf1[3];
-		itoa(startValueableObjects - valueableObjects, buf1, 10);
+		utoa(startValueableObjects - valueableObjects, buf1, 10);
 		char buf2[6];
-		itoa(orbzScore, buf2, 10);
+		utoa(orbzScore, buf2, 10);
 		char buf3[6];
-		itoa(roundScore, buf3, 10);
+		utoa(roundScore, buf3, 10);
 		strcpy(sub, buf1);
 		strcat(sub, " Orbz X ");
 		strcat(sub, buf2);
@@ -3678,11 +3710,11 @@ void printLargeString_2(char cy, const char *s, bool withRoundScore, bool withLe
 	{
 		char sub[40];
 		char buf1[3];
-		itoa(balls, buf1, 10);
+		utoa(balls, buf1, 10);
 		char buf2[6];
-		itoa(roundScore, buf2, 10);
+		utoa(roundScore, buf2, 10);
 		char buf3[6];
-		itoa(levelScore, buf3, 10);
+		utoa(levelScore, buf3, 10);
 		strcpy(sub, buf1);
 		strcat(sub, " Balls X ");
 		strcat(sub, buf2);
@@ -3816,7 +3848,7 @@ void setTunes_2(bool isOn)
 			proxy_memcpy(9, 2, Buffer, MusicBackground2, 0x800);
 		}
 		breakMusic = true;
-		playSubtune(0);
+		playSubtune(2);
 		music_ff();
 	}
 }
@@ -4642,7 +4674,7 @@ struct BombDisplay bombQueue_dequeue_2()
 void showBalls_2()
 {
 	char buff[2];
-	itoa(balls, buff, 10);
+	utoa(balls, buff, 10);
 	string_write_2(23, 0, "00", VCOL_WHITE);
 
 	byte l = strlen(buff);
@@ -4653,7 +4685,7 @@ void showBalls_2()
 void showMultiplier_2(byte multiplier)
 {
 	char buff[1];
-	itoa(multiplier, buff, 10);
+	utoa(multiplier, buff, 10);
 	string_write_2(15, 0, buff, VCOL_WHITE);
 	startHighlight_2(14,0,3, 1, false, VCOL_WHITE);
 }
@@ -8331,6 +8363,7 @@ int main(void)
 	eflash.bank = 1;
 	highlight.timer = 0;
 	level = 0;
+	isMusic = true;
 
 	state = GS_TITLE_INIT;
  

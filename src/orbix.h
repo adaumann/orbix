@@ -282,6 +282,7 @@ void intro_2();
 byte simulatePhysics_3(byte id);
 void restoreSimulationFinish_3(byte id);
 void saveSimulationStart_3(byte id);
+void paintMusicItem_1();
 
 void initScene0_4();
 void initScene1_4();
