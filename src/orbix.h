@@ -212,7 +212,7 @@ void updatePhysics_1(byte id);
 void updateCollisions_1();
 void gameLoop_1();
 void hideGameObject_2(byte id);
-void resetBall_1(byte id);
+void resetBall_2(byte id);
 struct ScoreDisplay scoreQueue_dequeue_2();
 void scoreQueue_enqueue_2(ScoreDisplay insertItem);
 void handleScore_2(byte id); //
