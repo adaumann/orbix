@@ -1,8 +1,19 @@
-Orbix V1.0.0
-------------
+# Orbix V1.0.1
+==============
 
-Copyright 2024 - fleischgemuese
+Game for C64/C128 machines
 
+*Copyright 2024 - fleischgemuese*
+
+V1.0.1: 
+* C128 Turbo mode support - Nearly doubled the speed! - Please use x128.exe from Vice to run
+* Better handling for deleting eliminated orbz
+
+
+## Download
+You can download binaries from itch.io: https://fleischgemuese.itch.io. Donation is welcome
+
+## Description
 Welcome to the Orbix solar system! Your mission is simple: eliminate all the orange Orbz by launching a ball from the 
 top to clear each level. But it's not just about accuracy-plan your shots carefully, use puzzle-solving skills, or 
 rely on a bit of luck to conquer the game.
@@ -21,13 +32,24 @@ Watch out for special elements like:
 
 Plan ahead, aim wisely, and overcome every challenge to rack up as many points as you can! But be careful-the number of balls is limited. Run out, and its game over.
 
-Controls
+## Installation
+You need Oscar C64 Compiler: https://github.com/drmortalwombat/oscar64 to compile, in src/ Folder run build.bat
+
+This game is easyflash only. Therefore you need to build a cartridge to play on real hardware. Please refer easyflash documentation.
+
+Alternativly you can use Ultimate II or Ultimate 64 extension module
+
+The game is fully playable on Vice Emulator: VICE - the Versatile Commodore Emulator. Is is recommended to use the C128 (x128.exe) emulator instead of C64 (x64sc.exe) which has a smoother gameplay
+
+Also the game runs on TheC64 machine... retro games
+
+It was tested with PAL, NTSC
+
+## Controls
 --------
 Play with Joystick port#2. Move left/Right to choose direction, fire to shoot. Press Fire+Down to self-destruct.
 
-
-Scoring system
----------------
+## Scoring system
 
 The more Orbz eliminated the multiplier rises which multiplies the points.
 * Orange orbz: 100 points.
@@ -37,12 +59,10 @@ The more Orbz eliminated the multiplier rises which multiplies the points.
 * Round score: If the ball is gone you get points for hit orbz.
 * Level score: When the level is completed, you get points for remaining balls.
 
-Installation
-------------
-This game is easyflash only, a disk Version is not planned. It was tested with PAL, NTSC and works also on TheC64.
-
-Credits
--------
+## Credits
 Programming, graphics, and levels by Andy Daumann (fleischgemuese).
 Music by picrard.
-Special thanks to DrMortalWombat for providing Oscar 64 C Compiler and the great bitmap C library. Tools used: Oscar64 C Compiler, Sid SFX, Goattracker.
+Special thanks to DrMortalWombat for providing Oscar 64 C Compiler and the great bitmap C library. Tools used: Oscar64 C Compiler, Sid SFX, Goattracker
+
+## Licence
+All rights reserverd

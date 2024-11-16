@@ -323,7 +323,7 @@ Bitmap Screen;
 
 ClipRect scr = {0, 8, 320, 200};
 
-RIRQCode bottom, top, rmenu;
+RIRQCode bottom, top, rmenu, turbo;
 #define clipX 0
 #define clipY 1
 #define clipW 40
@@ -331,6 +331,7 @@ RIRQCode bottom, top, rmenu;
 
 #pragma align(top, 32)
 #pragma align(bottom, 32)
+#pragma align(turbo, 32)
 
 // Screen and color ram address
 
@@ -1578,7 +1579,7 @@ void playSfx(byte num)
 	__asm
 	{
         lda num
-        ldy #$00
+        ldy #$02
         jsr $cc4a	
     };
 }
@@ -1848,7 +1849,6 @@ __interrupt void menu_interrupt()
 	joy_poll(0);
 
 	music_play();
-	timer++;
 
 	if(highlight.timer == 0xff)
 	{
@@ -2098,6 +2098,7 @@ void frameLoop_1()
 	char author2Txt[] = "music: picrard";
 	// char scoreTxt[] = "Score:";
 	char hiscoreTxt[] = " Hiscore: ";
+	char opt[] = "C128 optimized";
 
 	char titleTxt[] = "ORBIX";
 
@@ -2111,6 +2112,7 @@ void frameLoop_1()
 		playTunes = true;
 		playSubtune(0);
 		rasterMenuInit(true);
+
 
 		// Switch to hires mode
 		vic_setmode(VICM_HIRES, Color1, Hires);
@@ -2168,6 +2170,7 @@ void frameLoop_1()
 		colorAreaUnclipped(12,8,16,8,0x10, true);
 		proxy0_put_string(&Screen, &scr, 1, 192, authorTxt, BLTOP_COPY);
 		proxy0_put_string(&Screen, &scr, 258, 192, author2Txt, BLTOP_COPY);
+		proxy0_put_string(&Screen, &scr, 160-30, 192, opt, BLTOP_COPY);
 		colorAreaUnclipped(0,24,40,1,0xe1, true);
 		proxy0_put_string(&Screen, &scr, 160 - (22 / 2), 68, titleTxt, BLTOP_COPY);
 		proxy0_put_string(&Screen, &scr, 160 - (50 / 2), 88, startTxt, BLTOP_COPY);
@@ -8334,13 +8337,18 @@ void rasterInit(bool useKernal)
 	rirq_write(&top, 2, &vic.ctrl1, VIC_CTRL1_BMM | VIC_CTRL1_DEN | VIC_CTRL1_RSEL | 3);
 	rirq_call(&top, 3, joy_interrupt);
 
-	rirq_build(&bottom, 3);
-	rirq_delay(&bottom, 1);
-	rirq_write(&bottom, 1, &vic.memptr, 0x22);
-	rirq_write(&bottom, 2, &vic.ctrl1, VIC_CTRL1_DEN | VIC_CTRL1_RSEL | 3);
+	rirq_build(&bottom, 4);
+	rirq_delay(&bottom, 5);
+	rirq_write(&bottom, 1, (char *)0xd030, 0);
+	rirq_write(&bottom, 2, &vic.memptr, 0x22);
+	rirq_write(&bottom, 3, &vic.ctrl1, VIC_CTRL1_DEN | VIC_CTRL1_RSEL | 3);
+
+	rirq_build(&turbo, 1);
+	rirq_write(&turbo, 0, (char *)0xd030, 1);
 
 	rirq_set(0, 57, &top);
-	rirq_set(1, 20, &bottom);
+	rirq_set(1, 250, &bottom);
+	rirq_set(2, 250, &turbo);
 	rirq_sort();
 
 	rirq_start();
@@ -8361,6 +8369,41 @@ void rasterSnd(bool useKernal)
 
 int main(void)
 {
+	// #define C128_MODE_REGISTER ((volatile unsigned char*)0xD02F)
+
+    // unsigned char value = *C128_MODE_REGISTER & 0xC0;
+    
+    // // Return true if the value matches $C0 (indicating a C128)
+	// if(value == 0xc0)
+	// {
+	// 	vic.color_border = VCOL_WHITE;
+	// }
+	// else
+	// {
+	// 	vic.color_border = VCOL_RED;
+	// }
+
+
+    // unsigned int kaddress = 0xd02f; // Replace with your desired address
+    // unsigned int taddress = 0xd030; // Replace with your desired address
+	// unsigned char *kptr = (unsigned char *)kaddress;
+	// unsigned char *tptr = (unsigned char *)taddress;
+	// *tptr = 0xcc;
+
+
+    // unsigned char value = *tptr; // Read the value at the address
+
+	// if(value == 0xfc)
+	// {
+	// 	// C128
+	// 	vic.color_border = VCOL_WHITE;
+	// }
+	// else
+	// {
+	// 	vic.color_border = VCOL_RED;
+	// }
+
+
 	// Activate trampoline
 	mmap_trampoline();
 
@@ -8412,10 +8455,12 @@ int main(void)
 	isMusic = true;
 
 	state = GS_TITLE_INIT;
+
  
 	// Forever
 	for (;;)
 	{
+		timer++;
 		// One game loop iteration
 		frameLoop_1();
 		rirq_wait();
