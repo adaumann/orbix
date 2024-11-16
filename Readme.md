@@ -1,5 +1,4 @@
 # Orbix V1.0.1
-==============
 
 Game for C64/C128 machines
 
@@ -46,7 +45,6 @@ Also the game runs on TheC64 machine... retro games
 It was tested with PAL, NTSC
 
 ## Controls
---------
 Play with Joystick port#2. Move left/Right to choose direction, fire to shoot. Press Fire+Down to self-destruct.
 
 ## Scoring system
