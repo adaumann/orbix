@@ -33,7 +33,7 @@ Watch out for special elements like:
 Plan ahead, aim wisely, and overcome every challenge to rack up as many points as you can! But be careful-the number of balls is limited. Run out, and its game over.
 
 ## Installation
-You need Oscar C64 Compiler: https://github.com/drmortalwombat/oscar64 to compile, in src/ Folder run build.bat
+You need Oscar C64 Compiler V1.13.255 (https://github.com/drmortalwombat/oscar64/releases/download/v1.31.255/oscar64setup.msi) (newer versions need more memory, need to fix it later) : https://github.com/drmortalwombat/oscar64 to compile, in src/ Folder run build.bat or build_128.bat
 
 This game is easyflash only. Therefore you need to build a cartridge to play on real hardware. Please refer easyflash documentation.
 

@@ -21,7 +21,7 @@
 #pragma region(main, 0x0905, 0x8000, , , { code, data, bss, heap, stack } )
 
 // #pragma stacksize(1024)
-// #pragma heapsize(600)
+// #pragma heapsize(0)
 
 #pragma section(bcode1, 0)
 #pragma section(bdata1, 0)
